@@ -32,7 +32,7 @@ An independent OpenStack deployment. Each region has:
 - Its own set of credentials
 - No resource sharing across regions
 
-Region naming: `<geo>-<country>-<number>` (e.g., `eu-de-1`, `qa-de-1`, `na-us-1`, `ap-jp-1`)
+Region naming: `<geo>-<country>-<number>` (e.g., `eu-de-1`, `na-us-1`, `ap-jp-1`)
 
 ### Domain
 

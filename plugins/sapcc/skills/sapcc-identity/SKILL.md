@@ -86,7 +86,7 @@ For deeper explanation, see `references/domain-project-model.md`.
 1. keystone_list_application_credentials
    → Check if one already exists with intended name
 2. keystone_create_application_credential
-   name: "mcp-server-<project>-<region>"  (e.g., mcp-server-cc-demo-qa-de-1)
+   name: "mcp-server-<project>-<region>"  (e.g., mcp-server-cc-demo-eu-de-2)
    description: "MCP server credential for <project> in <region>"
    expires_at: "2027-05-06T00:00:00Z"  (recommend 1 year dev, 90 days prod)
 3. IMMEDIATELY store the secret in keychain:

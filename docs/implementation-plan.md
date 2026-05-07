@@ -2,7 +2,7 @@
 
 ## Goal
 
-Build a complete agent toolkit for SAP Converged Cloud that teaches AI agents how to effectively use the openstack-mcp-server's 28+ tools across 9 services, following the AWS agent-toolkit-for-aws plugin pattern.
+Build a complete agent toolkit for SAP Converged Cloud that teaches AI agents how to effectively use the openstack-mcp-server's 55 tools across 9 services, following the AWS agent-toolkit-for-aws plugin pattern.
 
 ## Phases
 

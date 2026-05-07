@@ -33,7 +33,7 @@ initiator (who) → action (what) → target (to what) → outcome (result)
 
 | Field | Description | Example |
 |-------|-------------|---------|
-| `initiator.name` | Username who performed the action | `I810033` |
+| `initiator.name` | Username who performed the action | `D012345` |
 | `action` | The operation performed | `update` |
 | `target.type_uri` | Resource type in slash format | `compute/server` |
 | `target.id` | UUID of the affected resource | `abc-123-def` |
@@ -91,7 +91,7 @@ Events appear seconds to minutes after the action occurs. If you just performed 
 
 ### 9. initiator_name is the username, not UUID
 
-Filter by human-readable username (e.g., `I810033`, `technical_user_xyz`), not the user's Keystone UUID. This is the name that appears in Keystone token info.
+Filter by human-readable username (e.g., `D012345`, `technical_user_xyz`), not the user's Keystone UUID. This is the name that appears in Keystone token info.
 
 ### 10. Full event detail includes request/response attachments
 

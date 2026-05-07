@@ -59,4 +59,4 @@ Each SAP CC region is an independent OpenStack deployment:
 - Separate Keystone (identity)
 - Separate service catalog
 - Separate credentials required
-- Region naming: `<geo>-<country>-<number>` (e.g., `eu-de-1`, `qa-de-1`, `na-us-1`)
+- Region naming: `<geo>-<country>-<number>` (e.g., `eu-de-1`, `na-us-1`)

@@ -36,7 +36,7 @@ Copy skills to your agent's skills location:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**MCP Server** ([openstack-mcp-server](https://github.com/notque/openstack-mcp-server)) = runtime providing typed tools (28+ API operations)
+**MCP Server** ([openstack-mcp-server](https://github.com/notque/openstack-mcp-server)) = runtime providing typed tools (55 API operations)
 **Agent Toolkit** (this repo) = intelligence layer teaching agents *when* and *how* to use those tools
 
 ## What's Included

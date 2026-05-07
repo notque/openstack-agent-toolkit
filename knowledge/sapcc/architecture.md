@@ -26,7 +26,7 @@ Format: `<geo>-<country>-<number>`
 | `na-us-3` | US Central | North America |
 | `ap-jp-1` | Japan | Asia-Pacific |
 | `ap-au-1` | Australia | Asia-Pacific |
-| `qa-de-1` | Germany | QA/staging environment |
+| ... | Various | Non-production regions also exist |
 
 ## Domain → Project Hierarchy
 

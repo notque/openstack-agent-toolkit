@@ -5,7 +5,7 @@
 ### Push Flow
 
 ```
-docker push registry.region.cloud.sap/account/repo:tag
+docker push registry.<region>.cloud.example.com/account/repo:tag
   1. Client authenticates via OpenStack token
   2. Layers uploaded to account's backing storage (Swift/S3)
   3. Manifest created linking layers together
@@ -17,7 +17,7 @@ docker push registry.region.cloud.sap/account/repo:tag
 ### Pull Flow
 
 ```
-docker pull registry.region.cloud.sap/account/repo:tag
+docker pull registry.<region>.cloud.example.com/account/repo:tag
   1. Client authenticates via OpenStack token
   2. Tag resolved to manifest digest
   3. Manifest fetched → layer list retrieved

@@ -112,7 +112,7 @@ Output the configuration block for Claude Code settings (`~/.claude/settings.jso
     "sapcc": {
       "command": "openstack-mcp-server",
       "env": {
-        "OS_AUTH_URL": "https://identity-3.{region}.cloud.sap/v3",
+        "OS_AUTH_URL": "https://identity-3.{region}.cloud.example.com/v3",
         "OS_APPLICATION_CREDENTIAL_ID": "{id}",
         "OS_APPCRED_SECRET_CMD": "security find-generic-password -a mcp-server-{project}-{region} -s openstack-appcred -w",
         "OS_REGION_NAME": "{region}"
