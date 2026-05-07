@@ -18,12 +18,32 @@ metadata:
 
 ## MCP Tools
 
-| Tool | Purpose |
-|------|---------|
-| \`nova_list_servers\` | List instances. Filters: \`status\`, \`name\` (regex), \`limit\`. Returns ID, name, status, addresses. |
-| \`nova_get_server\` | Full detail by UUID: addresses, flavor, image, host_id, metadata, created/updated timestamps. |
-| \`nova_list_flavors\` | Available instance types with vCPUs, RAM (MiB), disk (GiB). Use for sizing decisions. |
-| \`nova_server_action\` | Lifecycle actions: \`start\`, \`stop\`, \`reboot\` (type: SOFT/HARD), \`pause\`, \`unpause\`, \`suspend\`, \`resume\`. |
+### Read Tools
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `nova_list_servers` | List instances with filtering | `status`, `name` (regex), `limit` |
+| `nova_get_server` | Full detail by UUID: addresses, flavor, image, host_id, metadata | `server_id` |
+| `nova_list_flavors` | Available instance types with vCPUs, RAM, disk | — |
+| `nova_list_keypairs` | List SSH keypairs for current user | — |
+| `nova_list_availability_zones` | List AZs and their state | — |
+| `nova_get_quotas` | Compute quota usage and limits | `project_id` (optional) |
+| `nova_list_instance_actions` | Action history for a server (start, stop, reboot, etc.) | `server_id` |
+| `nova_list_server_groups` | List server groups (anti-affinity, affinity policies) | — |
+| `nova_list_volume_attachments` | List volumes attached to a server | `server_id` |
+
+### Write Tools (requires MCP_READ_ONLY=false)
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `nova_server_action` | Lifecycle actions: start, stop, reboot, pause, unpause, suspend, resume | `server_id`, `action`, `type` (for reboot) |
+| `nova_create_server` | Create a new server instance | `name`, `flavor`, `image`, `network` |
+
+### Admin Tools (requires MCP_ADMIN_TOOLS=true)
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `nova_list_hypervisors` | List all hypervisors in the deployment | — |
+| `nova_get_hypervisor` | Detail for a specific hypervisor (capacity, VMs) | `hypervisor_id` |
+| `nova_list_services` | List Nova services (compute, scheduler, conductor) and state | — |
+| `nova_list_aggregates` | List host aggregates and their metadata | — |
 
 ## Gotchas
 

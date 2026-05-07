@@ -2,7 +2,7 @@
   "author": {
     "name": "SAP Converged Cloud"
   },
-  "description": "Operate SAP Converged Cloud: compute, networking, storage, identity, quota, audit, metrics, registry, and endpoint services.",
+  "description": "Operate SAP Converged Cloud: 19 skills covering 119 MCP tools across compute, networking, storage, identity, quota, audit, metrics, registry, DNS, load balancers, images, object storage, secrets, autoscaling, shared file systems, baremetal, and connectivity.",
   "homepage": "https://github.com/notque/openstack-agent-toolkit",
   "keywords": [
     "openstack",

@@ -17,10 +17,27 @@ Inspect secrets stored in the key manager: list secrets, check metadata, verify 
 
 ## MCP Tools
 
+### Read Tools (always available)
+
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `barbican_list_secrets` | List secrets (metadata only) | `name`, `secret_type` (symmetric, public, private, passphrase, certificate, opaque) |
-| `barbican_get_secret` | Get metadata for a single secret | `secret_id` (UUID, required) |
+| `barbican_list_secrets` | List secret metadata (payload never returned) | `name`, `secret_type` (symmetric/public/private/passphrase/certificate/opaque) |
+| `barbican_get_secret` | Get single secret metadata | `secret_id` (**required**) |
+| `barbican_list_containers` | List secret containers (cert bundles, RSA pairs) | `name`, `type` (generic/rsa/certificate) |
+| `barbican_get_container` | Get container detail with secret refs | `container_id` (**required**) |
+| `barbican_list_orders` | List secret generation orders | (none) |
+
+### Security: Credential Isolation
+
+- **Secret payloads are NEVER returned** by any Barbican MCP tool
+- Only metadata is exposed: name, type, status, algorithm, bit_length, expiration
+- To retrieve actual secret values, use the OpenStack CLI with appropriate RBAC
+- No write or admin tiers exist for Barbican — all 5 tools are read-only
+
+### Guardrails
+
+- **UUID validation**: `secret_id` and `container_id` validated before API call
+- **No payload access**: By design, the MCP server never fetches or returns secret payload content
 
 ## Gotchas
 

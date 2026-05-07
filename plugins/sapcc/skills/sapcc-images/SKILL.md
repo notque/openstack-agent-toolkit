@@ -16,10 +16,25 @@ Inspect and list VM images: find available boot images, check image status, unde
 
 ## MCP Tools
 
+### Read Tools (always available)
+
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `glance_list_images` | List images with optional filters | `name`, `status` (queued, saving, active, killed, deleted, deactivated), `visibility` (public, private, shared, community), `owner` (project ID) |
-| `glance_get_image` | Full detail for a single image | `image_id` (UUID, required) |
+| `glance_list_images` | List available images | `name`, `status` (queued/saving/active/killed/deleted/deactivated), `visibility` (public/private/shared/community), `owner` |
+| `glance_get_image` | Full image detail by UUID | `image_id` (**required**) |
+| `glance_list_image_members` | List projects an image is shared with | `image_id` (**required**) |
+
+### Admin Tools† (require `MCP_ADMIN_TOOLS=true`)
+
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `glance_list_tasks`† | List image import tasks | `status` (pending/processing/success/failure), `type` |
+
+### Guardrails
+
+- **UUID validation**: `image_id` validated before API call
+- **No write tools**: Image upload/delete not available via MCP (use OpenStack CLI)
+- **Visibility meanings**: `public` = all projects see it; `shared` = explicitly shared via members; `community` = discoverable by all but not in default list
 
 ## Gotchas
 

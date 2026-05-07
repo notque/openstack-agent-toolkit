@@ -16,13 +16,27 @@ metadata:
 
 ## MCP Tools
 
+### Read Tools
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `keystone_token_info` | Current auth context: user, project, domain, roles, catalog | None |
 | `keystone_list_projects` | List accessible projects | `domain_id`, `name` (optional filters) |
+| `keystone_token_info` | Current auth context: user, project, domain, roles, catalog | — |
+| `keystone_list_application_credentials` | List app credentials for current user | — |
+| `keystone_list_domains` | List available domains | `name` (optional) |
+| `keystone_list_users` | List users in a domain | `domain_id`, `name` (optional) |
+| `keystone_list_roles` | List available roles | — |
+
+### Write Tools (requires MCP_READ_ONLY=false)
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
 | `keystone_create_application_credential` | Create app credential (secret shown once) | `name`, `description`, `expires_at`, `roles` |
-| `keystone_list_application_credentials` | List app creds for current user | None |
-| `keystone_delete_application_credential` | Delete/revoke an app credential | `id` (UUID) |
+| `keystone_delete_application_credential` | Delete/revoke an app credential | `id` |
+
+### Admin Tools (requires MCP_ADMIN_TOOLS=true)
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `keystone_list_role_assignments` | List role assignments across projects/domains | `project_id`, `user_id`, `role_id` (optional filters) |
+| `keystone_list_groups` | List groups and their memberships | `domain_id` (optional) |
 
 ## SAP CC Domain Model
 

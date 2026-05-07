@@ -17,11 +17,29 @@ Manage DNS zones and recordsets: list zones, inspect zone details, query records
 
 ## MCP Tools
 
+### Read Tools (always available)
+
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `designate_list_zones` | List DNS zones with optional filters | `name`, `status` (ACTIVE, PENDING, ERROR), `type` (PRIMARY, SECONDARY) |
-| `designate_get_zone` | Full detail for a single zone | `zone_id` (UUID, required) |
-| `designate_list_recordsets` | List recordsets within a zone | `zone_id` (UUID, required), `name`, `type` (A, AAAA, CNAME, MX, TXT, etc.), `status` |
+| `designate_list_zones` | List DNS zones with optional filters | `name`, `status` (ACTIVE/PENDING/ERROR), `type` (PRIMARY/SECONDARY) |
+| `designate_get_zone` | Full zone detail by UUID | `zone_id` (**required**) |
+| `designate_list_recordsets` | List recordsets within a zone | `zone_id` (**required**), `name`, `type` (A/AAAA/CNAME/MX/TXT/SRV/NS), `status`, `data` |
+| `designate_list_zone_transfer_requests` | List outgoing zone transfer requests | `zone_id`, `status` |
+| `designate_list_zone_transfer_accepts` | List accepted zone transfers | (none) |
+
+### Write Tools* (require `MCP_READ_ONLY=false`)
+
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `designate_create_recordset`* | Create a DNS recordset in a zone | `zone_id` (**required**), `name` (**required**, FQDN with trailing dot), `type` (**required**), `records` (**required**, comma-separated), `ttl`, `description`, `confirmed` |
+| `designate_delete_recordset`* | Delete a DNS recordset | `zone_id` (**required**), `recordset_id` (**required**), `confirmed` |
+
+### Guardrails
+
+- **FQDN validation**: `name` must end with `.` (e.g., `app.example.com.`)
+- **CNAME single-value**: CNAME records must have exactly one value in `records`
+- **UUID validation**: All `*_id` parameters validated before API call
+- **Confirmation required**: Write tools return preview unless `confirmed=true`
 
 ## Gotchas
 

@@ -17,11 +17,28 @@ Inspect Swift containers and objects: list containers, browse object listings, c
 
 ## MCP Tools
 
+### Read Tools (always available)
+
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `swift_list_containers` | List containers in the account | `prefix` (name prefix filter), `limit` (number, default 100) |
-| `swift_list_objects` | List objects in a container | `container` (name, required), `prefix`, `delimiter` (e.g. `/` for pseudo-dirs), `limit` (number, default 100) |
-| `swift_get_object_metadata` | Get metadata for a specific object | `container` (name, required), `object` (name, required) |
+| `swift_list_containers` | List containers in account | `prefix`, `limit` (default 100) |
+| `swift_list_objects` | List objects in a container | `container` (**required**), `prefix`, `delimiter` (e.g., `/` for pseudo-dirs), `limit` |
+| `swift_get_object_metadata` | Get object metadata (not content) | `container` (**required**), `object` (**required**) |
+
+### Write Tools* (require `MCP_READ_ONLY=false`)
+
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `swift_upload_object`* | Upload text content to a container | `container` (**required**), `object` (**required**), `content` (**required**), `content_type`, `safe_write` (bool, If-None-Match), `confirmed` |
+| `swift_delete_object`* | Delete an object from a container | `container` (**required**), `object` (**required**), `confirmed` |
+
+### Guardrails
+
+- **Path segment validation**: Container and object names validated to prevent path traversal
+- **safe_write mode**: When `safe_write=true`, upload fails if object already exists (prevents accidental overwrites)
+- **Confirmation required**: Write tools return preview unless `confirmed=true`
+- **Text-only uploads**: Only text content can be uploaded via MCP (binary files require CLI)
+- **No container create/delete**: Container lifecycle management not available via MCP
 
 ## Gotchas
 

@@ -17,11 +17,21 @@ Inspect Castellum autoscaling state: view resource configurations, check pending
 
 ## MCP Tools
 
-| Tool | Purpose | Key Parameters |
-|------|---------|----------------|
-| `castellum_get_project_resources` | Get autoscaling config and resource status | `project_id` (UUID, required) |
-| `castellum_list_pending_operations` | List scheduled but incomplete resizes | `project_id` (UUID), `asset_type` (e.g. `project-quota:compute:cores`) |
-| `castellum_list_recently_failed_operations` | List recently failed resizes | `project_id` (UUID), `asset_type` |
+> **Note**: Castellum MCP tools are planned but not yet implemented in the MCP server. The skill documents the service for reference. When tools become available, they will follow the `castellum_` prefix pattern.
+
+### Expected Tools (planned)
+
+| Tool | Purpose | Expected Parameters |
+|------|---------|---------------------|
+| `castellum_list_resources` | List autoscaling-managed resources | project_id |
+| `castellum_get_resource` | Get autoscaling config for a resource | asset_type, asset_id |
+| `castellum_list_operations` | List scaling operations history | asset_type, state |
+
+### Interim Workaround
+
+Until Castellum MCP tools are available:
+- Use `maia_query` with PromQL to check Castellum metrics: `castellum_resource_*`
+- Use `hermes_list_events(target_type=autoscaling/resource)` for scaling audit trail
 
 ## Gotchas
 

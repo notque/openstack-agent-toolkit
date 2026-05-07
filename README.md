@@ -50,6 +50,8 @@ Environment variables used by the MCP server:
 | `OS_APPCRED_SECRET_CMD` | Command to retrieve app credential secret |
 | `OS_PROJECT_NAME` | Default project scope |
 | `OS_DOMAIN_NAME` | Domain (e.g., `monsoon3`) |
+| `MCP_READ_ONLY` | `true` (default) = read-only tools; `false` = enable write tools |
+| `MCP_ADMIN_TOOLS` | `true` = enable admin tools (requires `cloud_admin` role) |
 
 ## Quick Start
 
@@ -99,8 +101,20 @@ openstack-mcp-server --list-tools
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**MCP Server** ([openstack-mcp-server](https://github.com/notque/openstack-mcp-server)) = runtime providing typed tools (47+ API operations across 17 services)
+**MCP Server** ([openstack-mcp-server](https://github.com/notque/openstack-mcp-server)) = runtime providing 119 typed tools across 12 services, gated by environment variables
 **Agent Toolkit** (this repo) = intelligence layer teaching agents *when* and *how* to use those tools
+
+### Three-Tier Tool Model
+
+Tools are exposed progressively based on environment configuration:
+
+| Tier | Env Variable | Tools | Use Case |
+|------|-------------|-------|----------|
+| **Read** (default) | `MCP_READ_ONLY=true` | 91 tools | Safe exploration, monitoring, investigation |
+| **Write** | `MCP_READ_ONLY=false` | +16 tools | Resource creation, modification, deletion |
+| **Admin** | `MCP_ADMIN_TOOLS=true` | +12 tools | Cloud admin operations (hypervisors, agents, chassis) |
+
+All write tools enforce a **confirmation pattern** — they return a preview unless `confirmed=true` is passed. The `destructive-action-gate` hook additionally blocks deletes and power-state changes until the user explicitly approves.
 
 ## Task Routing
 

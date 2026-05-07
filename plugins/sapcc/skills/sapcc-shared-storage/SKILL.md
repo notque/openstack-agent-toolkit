@@ -17,10 +17,27 @@ Manage shared file systems: list shares, inspect share details, understand proto
 
 ## MCP Tools
 
+### Read Tools (always available)
+
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `manila_list_shares` | List shared file system shares | `name`, `status` (available, error, creating, deleting, error_deleting), `share_proto` (NFS, CIFS, GlusterFS, HDFS, CephFS) |
-| `manila_get_share` | Full detail for a single share | `share_id` (UUID, required) |
+| `manila_list_shares` | List file shares in project | `name`, `status` (available/error/creating/deleting/error_deleting), `share_proto` (NFS/CIFS/GlusterFS/HDFS/CephFS) |
+| `manila_get_share` | Full share detail by UUID | `share_id` (**required**) |
+| `manila_list_access_rules` | List access rules for a share | `share_id` (**required**) |
+| `manila_list_share_networks` | List share networks (Neutron connectivity) | `name` |
+| `manila_list_snapshots` | List share snapshots | `share_id`, `status` (available/error/creating/deleting) |
+| `manila_list_security_services` | List LDAP/Kerberos/AD services | `type` (ldap/kerberos/active_directory), `name` |
+| `manila_list_share_types` | List available share types with specs | (none) |
+
+### Security: Credential Isolation
+
+- **Security service passwords excluded**: Manila security services may reference LDAP/AD credentials — password fields are never returned
+- No write or admin tiers exist for Manila — all 7 tools are read-only
+
+### Guardrails
+
+- **UUID validation**: `share_id` validated before API call
+- **share_proto filter**: Applied client-side (Manila API doesn't support it as query param)
 
 ## Gotchas
 

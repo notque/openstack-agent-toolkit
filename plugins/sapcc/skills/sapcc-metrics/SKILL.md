@@ -16,12 +16,13 @@ Maia is SAP CC's multi-tenant Prometheus-as-a-Service. Same PromQL query languag
 
 ## MCP Tools
 
-| Tool | Purpose | Required Params |
-|------|---------|-----------------|
-| `maia_metric_names` | List all available metric names for current project | (none) |
-| `maia_label_values` | Get values for a specific label | `label` (e.g., `__name__`, `instance`, `job`) |
-| `maia_query` | Execute instant PromQL query | `query` (optional: `time`) |
+### Read Tools
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `maia_query` | Execute instant PromQL query | `query`, `time` (optional) |
 | `maia_query_range` | Execute range PromQL query over time window | `query`, `start`, `end`, `step` |
+| `maia_label_values` | Get values for a specific label | `label` (e.g., `__name__`, `instance`, `job`) |
+| `maia_metric_names` | List all available metric names for current project | — |
 
 ## Maia vs Regular Prometheus
 

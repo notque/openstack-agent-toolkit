@@ -17,10 +17,36 @@ Inspect baremetal nodes: list nodes, check provision/power states, understand ma
 
 ## MCP Tools
 
+### Read Tools (always available)
+
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `ironic_list_nodes` | List baremetal nodes with filters | `provision_state` (active, available, deploying, error), `maintenance` ("true" for maintenance-only), `driver` (ipmi, redfish), `resource_class` |
-| `ironic_get_node` | Full detail for a single node | `node_id` (UUID or name, required) |
+| `ironic_list_nodes` | List baremetal nodes | `provision_state`, `maintenance` (true/false), `driver`, `resource_class`, `instance_uuid`, `fault`, `owner` |
+| `ironic_get_node` | Full node detail (sensitive fields excluded) | `node_id` (**required**, UUID or name) |
+| `ironic_list_node_ports` | List NICs for a node | `node_id` (**required**) |
+| `ironic_list_allocations` | List node allocations | `node_id`, `resource_class` |
+| `ironic_list_portgroups` | List port groups (bonded NICs) | `node_id` |
+
+### Admin Tools† (require `MCP_ADMIN_TOOLS=true`)
+
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `ironic_list_chassis`† | List baremetal chassis | (none) |
+| `ironic_node_power_state`†* | Change node power state | `node_id` (**required**), `target` (**required**: `power on`/`power off`/`rebooting`), `confirmed` |
+
+### Security: Credential Isolation
+
+- **DriverInfo excluded**: Node detail NEVER exposes BMC credentials (IPMI passwords, Redfish creds, iDRAC secrets)
+- **DriverInternalInfo excluded**: Internal provisioning state with potential secrets omitted
+- **InstanceInfo excluded**: Nova instance provisioning details omitted
+- **Properties excluded**: Hardware properties that may contain sensitive deployment info
+
+### Guardrails
+
+- **Path segment validation**: `node_id` accepts both UUID and human-readable names safely
+- **Power state allowlist**: Only `power on`, `power off`, `rebooting` accepted as targets
+- **Confirmation required**: Power state changes return preview unless `confirmed=true`
+- **Destructive action gate**: The `destructive-action-gate` hook blocks `ironic_node_power_state` until user approves
 
 ## Gotchas
 

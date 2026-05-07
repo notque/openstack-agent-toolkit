@@ -16,11 +16,20 @@ Limes is SAP CC's central quota management service. Not part of vanilla OpenStac
 
 ## MCP Tools
 
-| Tool | Purpose | Required Params |
-|------|---------|-----------------|
-| `limes_get_project_quota` | Quota + usage for a single project | `domain_id`, `project_id` (optional: `service`, `resource`) |
-| `limes_get_domain_quota` | Aggregated quota for all projects in a domain | `domain_id` (optional: `service`) |
-| `limes_get_cluster_quota` | Cluster-wide capacity and usage | (optional: `service`) |
+### Read Tools (always available)
+
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `limes_get_project_quota` | Get quota and usage for a project | `service` (compute, volumev2, network, dns, sharev2, object-store, loadbalancing, keppel), `resource` |
+| `limes_get_domain_quota` | Get domain-level quota allocation | `service`, `resource` |
+| `limes_get_cluster_capacity` | Get cluster-wide capacity/usage | `service`, `resource` |
+
+> All Limes tools are read-only. Quota changes require Elektra dashboard or cloud-admin API access.
+
+### Guardrails
+
+- **Project-scoped by default**: Quota data is returned for the authenticated project scope
+- **Service filter recommended**: Without `service` filter, returns ALL service quotas (can be large)
 
 ## Quota Model
 

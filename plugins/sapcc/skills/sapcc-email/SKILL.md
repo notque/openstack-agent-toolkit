@@ -16,10 +16,20 @@ Inspect email service status: check sending usage and list available email templ
 
 ## MCP Tools
 
-| Tool | Purpose | Key Parameters |
-|------|---------|----------------|
-| `cronus_get_usage` | Get email sending usage and status | (none — scoped to current project) |
-| `cronus_list_templates` | List available email templates | (none — scoped to current project) |
+> **Note**: Cronus MCP tools are planned but not yet implemented in the MCP server. The skill documents the service for reference. When tools become available, they will follow the `cronus_` prefix pattern.
+
+### Expected Tools (planned)
+
+| Tool | Purpose | Expected Parameters |
+|------|---------|---------------------|
+| `cronus_list_senders` | List verified sender addresses | project_id |
+| `cronus_get_usage` | Get email sending usage/limits | project_id |
+
+### Interim Workaround
+
+Until Cronus MCP tools are available:
+- Use `hermes_list_events(target_type=email/*)` for email audit trail
+- Email configuration is typically managed via the SAP CC dashboard
 
 ## Gotchas
 

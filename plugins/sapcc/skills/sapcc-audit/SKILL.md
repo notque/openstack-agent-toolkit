@@ -17,11 +17,21 @@ Hermes is SAP CC's centralized audit service. It records all API actions across 
 
 ## MCP Tools
 
+### Read Tools (always available)
+
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `hermes_list_events` | Search/filter audit events | `target_type`, `target_id`, `initiator_name`, `action`, `outcome`, `time_gte`, `time_lte`, `limit`, `sort` |
-| `hermes_get_event` | Full CADF event by UUID | `event_id` |
-| `hermes_list_attributes` | Discover valid filter values | `attribute` (one of: target_type, action, outcome, observer_type, initiator_type) |
+| `hermes_list_events` | Search/filter audit events | `target_type`, `target_id`, `initiator_name`, `initiator_id`, `action`, `outcome`, `observer_type`, `time_gte`, `time_lte`, `limit`, `offset`, `sort` |
+| `hermes_get_event` | Full CADF event by UUID | `event_id` (**required**) |
+| `hermes_list_attributes` | Discover valid filter values | `attribute` (**required**: target_type, action, outcome, observer_type, initiator_type) |
+
+> All Hermes tools are read-only. No write or admin tiers exist — audit events are immutable.
+
+### Guardrails
+
+- **10,000 offset ceiling**: Queries beyond offset 10,000 return HTTP 500. Use time-based windowing to stay below this limit.
+- **Time format**: ISO 8601 UTC timestamps (e.g., `2024-03-15T14:22:00Z`)
+- **Sort format**: `field:direction` (e.g., `time:desc`, `target_type:asc,time:desc`)
 
 ## CADF Event Model
 

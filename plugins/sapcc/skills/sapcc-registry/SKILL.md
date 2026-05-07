@@ -16,11 +16,22 @@ Keppel is SAP CC's multi-tenant container image registry. Not vanilla OpenStack.
 
 ## MCP Tools
 
-| Tool | Purpose | Required Params |
-|------|---------|-----------------|
-| `keppel_list_accounts` | List registry accounts (namespaces) | — |
-| `keppel_list_repositories` | List image repos within an account | `account` |
-| `keppel_list_manifests` | List manifests (image versions) in a repo | `account`, `repository` |
+### Read Tools (always available)
+
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `keppel_list_accounts` | List container image registry accounts | (none) |
+| `keppel_get_account` | Get account detail (registry endpoint, replication config) | `account_name` (**required**) |
+| `keppel_list_repositories` | List repos within an account | `account_name` (**required**) |
+| `keppel_list_manifests` | List image manifests (tags) in a repo | `account_name` (**required**), `repo_name` (**required**) |
+| `keppel_get_vulnerability_report` | Get vulnerability scan results for an image | `account_name` (**required**), `repo_name` (**required**), `digest` (**required**) |
+
+> All Keppel tools are read-only. Image push/pull uses standard Docker/OCI registry protocol, not MCP.
+
+### Guardrails
+
+- **Path segment validation**: Account and repository names validated to prevent path traversal
+- **Vulnerability data may be large**: Scan reports for images with many layers can be substantial
 
 ## Keppel Hierarchy
 

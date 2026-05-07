@@ -16,10 +16,28 @@ Manage Cinder volumes: list, inspect, understand attachment state, and troublesh
 
 ## MCP Tools
 
+### Read Tools
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `cinder_list_volumes` | List volumes with optional filters | `status`, `name` (returns: ID, name, status, size, volume_type, attachments) |
-| `cinder_get_volume` | Full detail for a single volume | `volume_id` (UUID) |
+| `cinder_list_volumes` | List volumes with optional filters | `status`, `name` |
+| `cinder_get_volume` | Full detail for a single volume | `volume_id` |
+| `cinder_list_snapshots` | List volume snapshots | `volume_id`, `status` |
+| `cinder_get_snapshot` | Detail for a single snapshot | `snapshot_id` |
+| `cinder_list_volume_types` | Available volume types and their properties | — |
+| `cinder_get_quotas` | Block storage quota usage and limits | `project_id` (optional) |
+| `cinder_list_backups` | List volume backups | `volume_id`, `status` |
+| `cinder_list_transfers` | List pending volume transfers | — |
+
+### Write Tools (requires MCP_READ_ONLY=false)
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `cinder_create_volume` | Create a new volume | `size`, `name`, `volume_type` |
+| `cinder_delete_volume` | Delete a volume (must be in available state) | `volume_id` |
+
+### Admin Tools (requires MCP_ADMIN_TOOLS=true)
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `cinder_list_services` | List Cinder services (scheduler, volume) and state | — |
 
 ## Gotchas
 

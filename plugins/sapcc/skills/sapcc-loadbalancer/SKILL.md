@@ -17,12 +17,37 @@ Manage Octavia load balancers: list/inspect LBs, listeners, and pools. Understan
 
 ## MCP Tools
 
+### Read Tools (always available)
+
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `octavia_list_loadbalancers` | List LBs with optional filters | `name`, `provisioning_status` (ACTIVE, PENDING_CREATE, ERROR), `vip_address` |
-| `octavia_get_loadbalancer` | Full detail for a single LB | `loadbalancer_id` (UUID, required) |
-| `octavia_list_listeners` | List listeners across LBs | `name`, `protocol` (TCP, HTTP, HTTPS, TERMINATED_HTTPS, UDP, SCTP), `loadbalancer_id` |
-| `octavia_list_pools` | List backend pools | `name`, `protocol` (TCP, HTTP, HTTPS, PROXY, UDP, SCTP), `loadbalancer_id` |
+| `octavia_list_loadbalancers` | List load balancers | `name`, `provisioning_status`, `vip_address`, `operating_status`, `vip_subnet_id`, `provider` |
+| `octavia_get_loadbalancer` | Full LB detail by UUID | `loadbalancer_id` (**required**) |
+| `octavia_list_listeners` | List listeners | `name`, `protocol` (TCP/HTTP/HTTPS/TERMINATED_HTTPS/UDP/SCTP), `loadbalancer_id`, `protocol_port` |
+| `octavia_list_pools` | List backend pools | `name`, `protocol`, `loadbalancer_id`, `lb_algorithm` (ROUND_ROBIN/LEAST_CONNECTIONS/SOURCE_IP) |
+| `octavia_list_members` | List pool members | `pool_id` (**required**), `name`, `address` |
+| `octavia_list_healthmonitors` | List health monitors | `pool_id`, `type` (HTTP/HTTPS/PING/TCP/TLS-HELLO/UDP-CONNECT) |
+| `octavia_list_l7policies` | List L7 routing policies | `listener_id`, `name` |
+| `octavia_list_l7rules` | List rules for L7 policy | `l7policy_id` (**required**) |
+
+### Write Tools* (require `MCP_READ_ONLY=false`)
+
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `octavia_create_loadbalancer`* | Create a new load balancer | `name` (**required**), `vip_subnet_id` (**required**), `description`, `confirmed` |
+| `octavia_delete_loadbalancer`* | Delete a load balancer | `loadbalancer_id` (**required**), `cascade` (bool, deletes children), `confirmed` |
+
+### Admin Tools† (require `MCP_ADMIN_TOOLS=true`)
+
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `octavia_list_amphorae`† | List amphora instances | `loadbalancer_id`, `status` |
+
+### Guardrails
+
+- **UUID validation**: All `*_id` parameters validated
+- **Confirmation required**: Write tools return preview unless `confirmed=true`
+- **Cascade delete**: `octavia_delete_loadbalancer` with `cascade=true` deletes ALL child resources (listeners, pools, members, monitors)
 
 ## Gotchas
 
