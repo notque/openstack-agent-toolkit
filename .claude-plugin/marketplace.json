@@ -10,7 +10,7 @@
   "plugins": [
     {
       "category": "cloud",
-      "description": "Operate SAP Converged Cloud: compute, networking, storage, identity, quota, audit, metrics, registry, and endpoint services.",
+      "description": "Operate SAP Converged Cloud: 19 skills covering compute, networking, storage, identity, quota, audit, metrics, registry, connectivity, DNS, load balancers, images, object storage, secrets, autoscaling, shared file systems, baremetal, and email.",
       "keywords": [
         "openstack",
         "sapcc",

@@ -12,9 +12,9 @@
 | DNS | Designate | v2 | `designate_` |
 | Load Balancing | Octavia | v2 | `octavia_` |
 | Image | Glance | v2 | `glance_` |
-| Shared Filesystems | Manila | v2 | `manila_` |
-| Bare Metal | Ironic | v1 | `ironic_` |
 | Key Manager | Barbican | v1 | `barbican_` |
+| Shared File Systems | Manila | v2 | `manila_` |
+| Bare Metal | Ironic | v1 | `ironic_` |
 
 ## SAP CC-Specific Services
 
@@ -25,8 +25,8 @@
 | Registry | Keppel | `keppel` | `keppel_` | Multi-tenant container image registry |
 | Endpoint Service | Archer | `endpoint-services` | `archer_` | Private network connectivity (like AWS PrivateLink) |
 | Metrics | Maia | `metrics` | `maia_` | Multi-tenant Prometheus-compatible metrics |
-| Autoscaling | Castellum | `castellum` | `castellum_` | Automatic resource quota scaling |
-| Email | Cronus | `email-aws` | `cronus_` | Email sending (SES-compatible) |
+| Autoscaling | Castellum | `castellum` | `castellum_` | Resource autoscaling policies |
+| Email | Cronus | `email-aws` | `cronus_` | Email notification service |
 
 ## Common Operations by Role
 
@@ -35,18 +35,12 @@
 - Review audit trail: `hermes_list_events`
 - Monitor metrics: `maia_query` with PromQL
 - Manage endpoints: `archer_list_services`, `archer_list_endpoints`
-- Autoscaling status: `castellum_get_project_resources`
-- Bare metal nodes: `ironic_list_nodes`
-- Images: `glance_list_images`
 
 ### Developer
 - List servers: `nova_list_servers`
 - Check networking: `neutron_list_networks`, `neutron_list_ports`
 - View container images: `keppel_list_repositories`
-- Check storage: `cinder_list_volumes`, `swift_list_containers`
-- DNS records: `designate_list_zones`, `designate_list_recordsets`
-- Load balancers: `octavia_list_loadbalancers`
-- File shares: `manila_list_shares`
+- Check storage: `cinder_list_volumes`
 
 ### Security/Compliance
 - Audit events: `hermes_list_events` with time/action/outcome filters
@@ -71,4 +65,39 @@ Each SAP CC region is an independent OpenStack deployment:
 - Separate Keystone (identity)
 - Separate service catalog
 - Separate credentials required
-- Region naming: `<geo>-<country>-<number>` (e.g., `eu-de-1`, `na-us-1`)
+- Region naming: `<geo>-<country>-<number>` (e.g., `eu-de-1`, `qa-de-1`, `na-us-1`)
+
+## Related CLI Tools
+
+| Service | CLI | Repository |
+|---------|-----|------------|
+| Hermes (Audit) | hermescli | [sapcc/hermescli](https://github.com/sapcc/hermescli) |
+| Limes (Quota) | limesctl | [sapcc/limesctl](https://github.com/sapcc/limesctl) |
+| All OpenStack | openstackclient | [openstack/python-openstackclient](https://github.com/openstack/python-openstackclient) |
+
+## API Type Declarations
+
+Canonical Go structs for SAP CC APIs: [sapcc/go-api-declarations](https://github.com/sapcc/go-api-declarations)
+
+| Package | Covers |
+|---------|--------|
+| `cadf` | CADF audit event format (Hermes) |
+| `limes` | Quota/usage resource models |
+| `castellum` | Autoscaling resource declarations |
+| `liquid` | Resource capacity protocol |
+
+## OpenStack API References
+
+| Service | API Docs |
+|---------|----------|
+| Nova | https://docs.openstack.org/api-ref/compute/ |
+| Neutron | https://docs.openstack.org/api-ref/network/ |
+| Cinder | https://docs.openstack.org/api-ref/block-storage/ |
+| Keystone | https://docs.openstack.org/api-ref/identity/ |
+| Glance | https://docs.openstack.org/api-ref/image/ |
+| Designate | https://docs.openstack.org/api-ref/dns/ |
+| Octavia | https://docs.openstack.org/api-ref/load-balancer/ |
+| Barbican | https://docs.openstack.org/api-ref/key-manager/ |
+| Manila | https://docs.openstack.org/api-ref/shared-file-system/ |
+| Ironic | https://docs.openstack.org/api-ref/baremetal/ |
+| Swift | https://docs.openstack.org/api-ref/object-store/ |

@@ -22,7 +22,7 @@ metadata:
 | `keystone_list_projects` | List accessible projects | `domain_id`, `name` (optional filters) |
 | `keystone_create_application_credential` | Create app credential (secret shown once) | `name`, `description`, `expires_at`, `roles` |
 | `keystone_list_application_credentials` | List app creds for current user | None |
-| `keystone_delete_application_credential` | Delete/revoke an app credential | `id` or `name` |
+| `keystone_delete_application_credential` | Delete/revoke an app credential | `id` (UUID) |
 
 ## SAP CC Domain Model
 

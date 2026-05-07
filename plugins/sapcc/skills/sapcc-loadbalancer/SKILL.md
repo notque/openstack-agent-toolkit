@@ -1,164 +1,71 @@
 ---
 name: sapcc-loadbalancer
 description: >
-  Load balancer management via Octavia in SAP Converged Cloud.
-  Triggers: load balancer, octavia, listener, pool, VIP, health monitor, L7, reverse proxy, LB
+  Load balancer operations via Octavia. Triggers: load balancer, lb, listener,
+  pool, vip, octavia, l7. NOT for: network ports or security groups (use
+  sapcc-networking).
 version: 1.0.0
 metadata:
   service: [octavia]
-  task: [inspect, manage, debug]
+  task: [manage, inspect, debug]
   persona: [developer, platform-engineer]
 ---
 
-# SAP CC Load Balancers (Octavia)
+# SAP CC Load Balancer (Octavia)
 
-Inspect Octavia load balancers: list LBs, view listeners and pools, and troubleshoot connectivity. Octavia provides L4/L7 load balancing as a service.
+Manage Octavia load balancers: list/inspect LBs, listeners, and pools. Understand the LB topology and troubleshoot provisioning issues.
 
 ## MCP Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `octavia_list_loadbalancers` | List LBs in current project | `name`, `provisioning_status`, `operating_status`, `vip_address`, `vip_subnet_id`, `provider` |
-| `octavia_get_loadbalancer` | Full detail for a single LB | `loadbalancer_id` (UUID) |
-| `octavia_list_listeners` | List listeners | `loadbalancer_id`, `name`, `protocol`, `protocol_port` |
-| `octavia_list_pools` | List backend pools | `loadbalancer_id`, `name`, `protocol`, `lb_algorithm` |
-
-## Octavia Object Model
-
-```
-Load Balancer (VIP address)
-├── Listener (protocol:port — e.g., HTTPS:443)
-│   └── Pool (backend group)
-│       ├── Member (backend server:port)
-│       ├── Member
-│       └── Health Monitor (checks member health)
-└── Listener (HTTP:80)
-    └── Pool
-        └── Members...
-```
+| `octavia_list_loadbalancers` | List LBs with optional filters | `name`, `provisioning_status` (ACTIVE, PENDING_CREATE, ERROR), `vip_address` |
+| `octavia_get_loadbalancer` | Full detail for a single LB | `loadbalancer_id` (UUID, required) |
+| `octavia_list_listeners` | List listeners across LBs | `name`, `protocol` (TCP, HTTP, HTTPS, TERMINATED_HTTPS, UDP, SCTP), `loadbalancer_id` |
+| `octavia_list_pools` | List backend pools | `name`, `protocol` (TCP, HTTP, HTTPS, PROXY, UDP, SCTP), `loadbalancer_id` |
 
 ## Gotchas
 
-### 1. Two status fields — provisioning vs operating
+1. **Two status fields: provisioning vs operating.** `provisioning_status` tracks the API/control plane state (ACTIVE, PENDING_CREATE, ERROR). `operating_status` tracks the data plane (ONLINE, DEGRADED, ERROR, NO_MONITOR). A LB can be ACTIVE provisioning but DEGRADED operating.
 
-| Field | Meaning |
-|-------|---------|
-| `provisioning_status` | Infrastructure state: ACTIVE, PENDING_CREATE, PENDING_UPDATE, ERROR |
-| `operating_status` | Traffic state: ONLINE, OFFLINE, DEGRADED, ERROR, NO_MONITOR |
+2. **Immutable during PENDING states.** When `provisioning_status` is any PENDING_* value, no mutations are allowed on the LB or its children (listeners, pools). Wait for ACTIVE before making changes.
 
-A LB can be `provisioning_status=ACTIVE` but `operating_status=DEGRADED` if some members are down.
+3. **Listener protocol determines TLS handling.** `TERMINATED_HTTPS` means TLS terminates at the LB (requires certificate). `HTTPS` means passthrough — the LB forwards encrypted traffic without inspecting it. Do not confuse these.
 
-### 2. VIP address is the entry point
+4. **Pool lb_method values are algorithm names.** Common values: `ROUND_ROBIN`, `LEAST_CONNECTIONS`, `SOURCE_IP`. These are not free-text — use the exact enum values.
 
-The Virtual IP (VIP) is what clients connect to. It's on a specific subnet. DNS should point to this address. The VIP does NOT change when backend members are added/removed.
+5. **loadbalancer_id filter on listeners/pools is optional.** Without it, you get all listeners/pools in the project. Always filter by `loadbalancer_id` when investigating a specific LB to avoid confusion.
 
-### 3. Listeners define what traffic to accept
+6. **VIP address is on a subnet.** The `vip_address` is allocated from `vip_subnet_id`. If you need the network context, look up the subnet in Neutron.
 
-Each listener binds protocol+port. You cannot have two listeners on the same port. Common patterns:
-- HTTPS:443 (with TLS termination via Barbican cert)
-- HTTP:80 (redirect to HTTPS or direct)
-- TCP:3306 (database passthrough)
-
-### 4. Pools define where traffic goes
-
-A pool groups backend members (servers). Key attributes:
-- `lb_algorithm`: ROUND_ROBIN, LEAST_CONNECTIONS, SOURCE_IP
-- Members are server IP:port pairs
-- Health monitor checks member availability
-
-### 5. TERMINATED_HTTPS means TLS terminates at the LB
-
-The LB decrypts HTTPS, forwards plain HTTP to backends. Requires a Barbican certificate reference. Backends only need to handle HTTP.
-
-### 6. Operating status NO_MONITOR = no health checks configured
-
-Without a health monitor, the LB cannot detect down members. Traffic goes to all members regardless of health. Always configure health monitors in production.
-
-### 7. Providers: amphora vs ovn
-
-- `amphora`: Full-featured (L7 rules, TLS termination, health monitors). Uses dedicated VMs.
-- `ovn`: Lightweight L4 only. Lower overhead but fewer features.
-
-### 8. Filter listeners/pools by loadbalancer_id
-
-Without `loadbalancer_id` filter, you get ALL listeners/pools across all LBs in the project. Always filter by LB for a specific investigation.
+7. **Topology: LB -> Listeners -> Pools -> Members.** Members are not exposed via MCP tools. You can see `default_pool_id` on listeners to trace which pool handles traffic.
 
 ## Common Workflows
 
-### Inventory Load Balancers
+### Map Full LB Topology
 
-```
-1. octavia_list_loadbalancers()
-2. Review: name, VIP address, provisioning/operating status
-3. Flag any with operating_status != ONLINE
-```
+1. `octavia_get_loadbalancer` with `loadbalancer_id` — note the VIP, status, and provider.
+2. `octavia_list_listeners` with `loadbalancer_id=<uuid>` — see all frontend listeners (protocol + port).
+3. `octavia_list_pools` with `loadbalancer_id=<uuid>` — see all backend pools and their algorithms.
+4. Match `default_pool_id` from listeners to pool IDs to understand traffic flow.
 
-### Full LB Topology
+### Diagnose LB in ERROR State
 
-```
-1. octavia_get_loadbalancer(loadbalancer_id=<uuid>) → VIP, status
-2. octavia_list_listeners(loadbalancer_id=<uuid>) → what ports are open
-3. octavia_list_pools(loadbalancer_id=<uuid>) → backend groups + members
-```
+1. `octavia_get_loadbalancer` — check `provisioning_status` and `operating_status`.
+2. If provisioning ERROR: the control plane failed (network issue, quota, amphora boot failure). Check `hermes_list_events`.
+3. If operating ERROR/DEGRADED: backend members are unhealthy. Pool health monitors are detecting failures.
 
 ### Find LB by VIP Address
 
-```
-1. octavia_list_loadbalancers(vip_address=<ip>)
-2. Or: neutron_list_ports() and match fixed_ips to the VIP
-```
-
-### Troubleshoot Degraded LB
-
-```
-1. octavia_get_loadbalancer(loadbalancer_id) → check operating_status
-2. octavia_list_pools(loadbalancer_id) → check pool operating_status
-3. If DEGRADED: some members are failing health checks
-4. Verify backend servers are running: nova_list_servers
-5. Check security groups allow health check traffic: neutron_list_security_groups
-```
-
-## Troubleshooting
-
-### LB provisioning_status is ERROR
-
-- Check Hermes: `hermes_list_events(target_type=loadbalancer)` for failure details
-- Common causes: subnet full (no IP for VIP), quota exhausted, backend unavailable
-- May need to delete and recreate
-
-### LB operating_status is OFFLINE
-
-- All members are failing health checks
-- Check backend servers are running and healthy
-- Verify security groups allow traffic from the LB subnet to member ports
-
-### operating_status is DEGRADED
-
-- Some but not all members are unhealthy
-- Identify failing members via pool status
-- Common: one server crashed or is overloaded
-
-### Listener on port 443 but no HTTPS
-
-- Check if listener protocol is `TERMINATED_HTTPS` (needs Barbican cert)
-- Or `TCP` (passthrough — TLS handled by backend)
-- `HTTP` on 443 works but is plain HTTP on a non-standard port
-
-## Security Considerations
-
-- VIP addresses reveal public-facing services
-- Listener protocols reveal what services are exposed
-- Pool members reveal backend server topology
-- Health monitor endpoints may be unauthenticated — check they don't expose sensitive data
-- TERMINATED_HTTPS references Barbican certificates — cert rotation matters
+1. `octavia_list_loadbalancers` with `vip_address=<ip>` — returns the matching LB.
+2. If no results, the IP may be a floating IP mapped to the VIP — check `neutron_list_floating_ips`.
 
 ## Cross-Service References
 
 | Need | Service | Tool |
 |------|---------|------|
-| VIP subnet details | Neutron | `neutron_list_subnets` |
-| Backend server status | Nova | `nova_get_server(<member_server_id>)` |
-| TLS certificates | Barbican | `barbican_get_secret` (cert referenced by listener) |
-| Who modified the LB | Hermes | `hermes_list_events(target_type=loadbalancer)` |
-| DNS pointing to VIP | Designate | `designate_list_recordsets(data=<vip_address>)` |
-| LB quota | Limes | `limes_get_project_quota(service=network)` |
+| Subnet details for VIP | Neutron | `neutron_get_subnet(<vip_subnet_id>)` |
+| Who created/modified the LB | Hermes | `hermes_list_events(target_type=loadbalancer)` |
+| LB quota for the project | Limes | `limes_get_project_quota(service=network)` |
+| Server behind a pool member | Nova | `nova_get_server(<member_server_id>)` |
+| Floating IP pointing to VIP | Neutron | `neutron_list_floating_ips` |

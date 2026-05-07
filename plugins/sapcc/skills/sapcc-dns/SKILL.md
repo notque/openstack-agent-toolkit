@@ -1,8 +1,9 @@
 ---
 name: sapcc-dns
 description: >
-  DNS zone and recordset management via Designate in SAP Converged Cloud.
-  Triggers: dns, zone, recordset, designate, domain, A record, CNAME, MX, TXT, nameserver
+  DNS zone and recordset operations via Designate. Triggers: dns, zone,
+  recordset, domain, designate. NOT for: network ports, floating IPs (use
+  sapcc-networking).
 version: 1.0.0
 metadata:
   service: [designate]
@@ -12,115 +13,57 @@ metadata:
 
 # SAP CC DNS (Designate)
 
-Manage DNS zones and recordsets: list zones, inspect zone details, and query recordsets. Designate is OpenStack's multi-tenant DNS-as-a-Service.
+Manage DNS zones and recordsets: list zones, inspect zone details, query recordsets by type.
 
 ## MCP Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `designate_list_zones` | List DNS zones in current project | `name`, `status`, `type` (returns: ID, name, email, TTL, status, type, serial, created_at) |
-| `designate_get_zone` | Full detail for a single zone | `zone_id` (UUID) |
-| `designate_list_recordsets` | List recordsets in a zone | `zone_id` (required), `name`, `type`, `status`, `data` |
+| `designate_list_zones` | List DNS zones with optional filters | `name`, `status` (ACTIVE, PENDING, ERROR), `type` (PRIMARY, SECONDARY) |
+| `designate_get_zone` | Full detail for a single zone | `zone_id` (UUID, required) |
+| `designate_list_recordsets` | List recordsets within a zone | `zone_id` (UUID, required), `name`, `type` (A, AAAA, CNAME, MX, TXT, etc.), `status` |
 
 ## Gotchas
 
-### 1. Zones are project-scoped — you cannot see other projects' zones
+1. **Zone names are FQDN with trailing dot.** Designate stores zone names like `example.com.` (note the trailing dot). When filtering by `name`, include the trailing dot or you will get zero results.
 
-Each project manages its own DNS zones. If you expect to see a zone but don't, verify you're authenticated to the correct project with `keystone_token_info`.
+2. **zone_id is required for recordsets.** You cannot list recordsets globally — you must first identify the zone UUID, then query recordsets within it. Always call `designate_list_zones` first if you only know the domain name.
 
-### 2. Zone names MUST end with a dot
+3. **Status PENDING means propagation in progress.** A zone or recordset in PENDING status has been accepted but is not yet live on nameservers. Do not treat PENDING as an error — wait and re-check.
 
-DNS convention requires fully qualified domain names (FQDNs) to end with a trailing dot. `example.com.` is correct; `example.com` may not match filters. The API returns names with trailing dots.
+4. **Recordset type must be uppercase.** The `type` filter expects uppercase values like `A`, `CNAME`, `MX`. Lowercase values will return no results without an error.
 
-### 3. Recordsets require a zone_id — you cannot list all recordsets globally
+5. **Multiple records per recordset.** A single recordset (e.g., type A) can contain multiple IP addresses in the `records` array. This is normal for round-robin DNS.
 
-You must first identify the zone, then list its recordsets. Workflow: `designate_list_zones` → pick zone → `designate_list_recordsets(zone_id=...)`.
+6. **SOA and NS recordsets are auto-managed.** Every zone has system-created SOA and NS recordsets. These cannot be modified and should be ignored when auditing user-created records.
 
-### 4. Status transitions: PENDING → ACTIVE
-
-After creation or modification, zones and recordsets go through `PENDING` status before becoming `ACTIVE`. A `PENDING` record is not yet propagated to DNS servers.
-
-### 5. Recordset types matter for filtering
-
-Common types: `A` (IPv4), `AAAA` (IPv6), `CNAME` (alias), `MX` (mail), `TXT` (arbitrary text, SPF, DKIM), `SRV` (service locator), `NS` (nameserver delegation).
-
-### 6. The `data` filter searches record values
-
-Use `data` to find records pointing to a specific IP or target. For example, `data=10.0.1.5` finds all A records pointing to that IP. Useful for "what DNS names point to this server?"
-
-### 7. TTL controls cache duration
-
-TTL (Time To Live) in seconds controls how long resolvers cache the record. Low TTL (60-300s) = faster propagation of changes. High TTL (3600-86400s) = less DNS traffic but slower updates. Zone-level TTL is the default; recordset-level TTL overrides it.
-
-### 8. Zone type PRIMARY vs SECONDARY
-
-`PRIMARY` zones are authoritative — you manage records directly. `SECONDARY` zones are replicas of an external primary — records are read-only copies. Most user zones are PRIMARY.
+7. **Serial number increments on every change.** The zone `serial` field is useful for verifying whether a recent change has been applied — compare before and after values.
 
 ## Common Workflows
 
-### Discover DNS Zones in Project
+### Find All Records for a Domain
 
-```
-1. designate_list_zones()
-2. Review zones — note name, status, type
-3. designate_get_zone(zone_id) for full detail
-```
+1. `designate_list_zones` with `name=example.com.` — get the zone UUID.
+2. `designate_list_recordsets` with `zone_id=<uuid>` — retrieve all recordsets.
+3. Filter results by `type` if you only need specific record types (A, CNAME, etc.).
 
-### Find All Records in a Zone
+### Diagnose DNS Resolution Failure
 
-```
-1. designate_list_zones() → identify target zone
-2. designate_list_recordsets(zone_id=<uuid>)
-3. Scan results for A, CNAME, MX, TXT records
-```
+1. `designate_list_zones` with `name=<domain.>` — confirm the zone exists and status is ACTIVE.
+2. `designate_list_recordsets` with `zone_id=<uuid>` and `name=<fqdn.>` — check if the expected recordset exists.
+3. If status is ERROR or PENDING, the issue is on the Designate side. If ACTIVE but resolution fails, the issue is downstream (caching, client config).
 
-### "What DNS points to this IP?"
+### Audit Zone Health
 
-```
-1. designate_list_zones() → get all zones
-2. For each zone: designate_list_recordsets(zone_id=<id>, data=<ip_address>)
-3. Matches show which names resolve to that IP
-```
-
-### Verify DNS Configuration for a Service
-
-```
-1. designate_list_zones(name=<expected_domain.>) → find the zone
-2. designate_list_recordsets(zone_id=<id>, name=<fqdn.>) → find specific record
-3. Check: correct type, correct data, status=ACTIVE
-```
-
-## Troubleshooting
-
-### Zone not found
-
-- Verify zone name includes trailing dot: `example.com.`
-- Check you're in the correct project: `keystone_token_info`
-- Zone may be in another project — DNS is project-scoped
-
-### Recordset status is PENDING for > 5 minutes
-
-- May indicate a backend issue — check Hermes audit trail
-- `hermes_list_events(target_type=dns/recordset, outcome=failure)`
-
-### DNS not resolving despite ACTIVE status
-
-- Check TTL — old cached value may not have expired at resolver
-- Verify the zone's NS records point to correct nameservers
-- Ensure the zone itself is ACTIVE (not just the recordset)
-
-## Security Considerations
-
-- DNS records reveal infrastructure topology (server IPs, service names)
-- TXT records may contain verification tokens, SPF policies, or DKIM keys
-- MX records expose mail server infrastructure
-- Treat zone data as internal — it maps your service architecture
+1. `designate_list_zones` with `status=ERROR` — find zones in error state.
+2. For each error zone, `designate_get_zone` to inspect details and timestamps.
+3. Cross-reference with `hermes_list_events` for the triggering action.
 
 ## Cross-Service References
 
 | Need | Service | Tool |
 |------|---------|------|
-| Server at an IP address | Nova | `nova_list_servers(ip=<address>)` |
-| Who modified DNS records | Hermes | `hermes_list_events(target_type=dns/recordset)` |
-| Load balancer VIP in DNS | Octavia | `octavia_get_loadbalancer` → check VIP address |
-| Network for a DNS-referenced IP | Neutron | `neutron_list_ports` |
+| Who modified a zone/recordset | Hermes | `hermes_list_events(target_type=zone)` |
+| DNS quota for the project | Limes | `limes_get_project_quota(service=dns)` |
+| Floating IP that should have a DNS record | Neutron | `neutron_list_floating_ips` |
+| Server associated with an A record IP | Nova | `nova_list_servers` + filter by IP |

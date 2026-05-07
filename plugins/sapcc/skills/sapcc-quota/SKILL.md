@@ -19,8 +19,8 @@ Limes is SAP CC's central quota management service. Not part of vanilla OpenStac
 | Tool | Purpose | Required Params |
 |------|---------|-----------------|
 | `limes_get_project_quota` | Quota + usage for a single project | `domain_id`, `project_id` (optional: `service`, `resource`) |
-| `limes_get_domain_quota` | Aggregated quota for all projects in a domain | `domain_id` (optional: `service`, `resource`) |
-| `limes_get_cluster_quota` | Cluster-wide capacity and usage | (optional: `service`, `resource`) |
+| `limes_get_domain_quota` | Aggregated quota for all projects in a domain | `domain_id` (optional: `service`) |
+| `limes_get_cluster_quota` | Cluster-wide capacity and usage | (optional: `service`) |
 
 ## Quota Model
 

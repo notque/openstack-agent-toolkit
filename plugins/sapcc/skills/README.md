@@ -27,3 +27,29 @@ The `SKILL.md` includes YAML frontmatter with `name` and `description`, followed
 - Common Workflows
 - Troubleshooting
 - Security Considerations
+- Cross-Service References
+- Routing (to reference files)
+
+## Available Skills
+
+| Skill | Service | Description |
+|-------|---------|-------------|
+| credential-setup | Keystone | Guided auth setup with keychain storage |
+| sapcc-audit | Hermes | CADF event investigation, compliance queries |
+| sapcc-autoscaling | Castellum | Autoscaling policies, resource operations |
+| sapcc-baremetal | Ironic | Bare metal node provisioning and lifecycle |
+| sapcc-compute | Nova | Server lifecycle, flavors, actions |
+| sapcc-connectivity | Archer | Private endpoint services, discovery |
+| sapcc-dns | Designate | DNS zones and recordsets |
+| sapcc-email | Cronus | Email notifications and SMTP relay |
+| sapcc-identity | Keystone | Domain/project model, app credentials |
+| sapcc-images | Glance | VM boot images, properties, visibility |
+| sapcc-loadbalancer | Octavia | Load balancers, pools, health monitors |
+| sapcc-metrics | Maia | PromQL queries, metric discovery |
+| sapcc-networking | Neutron | Networks, subnets, ports, security groups |
+| sapcc-object-storage | Swift | Object storage, containers, large objects |
+| sapcc-quota | Limes | Quota interpretation, capacity planning |
+| sapcc-registry | Keppel | Container images, vulnerabilities, federation |
+| sapcc-secrets | Barbican | Secret management, certificates, keys |
+| sapcc-shared-storage | Manila | Shared file systems, exports, share networks |
+| sapcc-storage | Cinder | Block storage volumes, snapshots |

@@ -21,7 +21,7 @@ Hermes is SAP CC's centralized audit service. It records all API actions across 
 |------|---------|----------------|
 | `hermes_list_events` | Search/filter audit events | `target_type`, `target_id`, `initiator_name`, `action`, `outcome`, `time_gte`, `time_lte`, `limit`, `sort` |
 | `hermes_get_event` | Full CADF event by UUID | `event_id` |
-| `hermes_list_attributes` | Discover valid filter values | `attribute_name` (one of: target_type, action, outcome, observer_type, initiator_type) |
+| `hermes_list_attributes` | Discover valid filter values | `attribute` (one of: target_type, action, outcome, observer_type, initiator_type) |
 
 ## CADF Event Model
 
@@ -49,7 +49,7 @@ See `references/cadf-event-format.md` for the full event schema.
 Correct: `compute/server`, `network/port`, `identity/project`, `dns/zone`
 Wrong: `nova/server`, `server`, `neutron/port`, `VM`
 
-The format is `<service-category>/<resource>`. Call `hermes_list_attributes` with `attribute_name=target_type` to discover valid values if unsure.
+The format is `<service-category>/<resource>`. Call `hermes_list_attributes` with `attribute=target_type` to discover valid values if unsure.
 
 ### 2. Time filters use PREFIX syntax
 
@@ -63,13 +63,13 @@ The value is a plain ISO 8601 timestamp. Do NOT embed operators in the value str
 
 Valid outcomes: `success`, `failure`, `pending`
 
-NOT: `200`, `404`, `500`, `created`, `error`. Use `hermes_list_attributes` with `attribute_name=outcome` to confirm.
+NOT: `200`, `404`, `500`, `created`, `error`. Use `hermes_list_attributes` with `attribute=outcome` to confirm.
 
 ### 4. action values are present-tense verbs
 
 Valid: `create`, `update`, `delete`, `read`, `authenticate`, `start`, `stop`
 
-NOT past tense: `created`, `updated`, `deleted`. NOT nouns: `creation`, `deletion`. Call `hermes_list_attributes` with `attribute_name=action` to see all tracked actions.
+NOT past tense: `created`, `updated`, `deleted`. NOT nouns: `creation`, `deletion`. Call `hermes_list_attributes` with `attribute=action` to see all tracked actions.
 
 ### 5. hermes_list_attributes is your discovery tool — call it first
 
@@ -144,9 +144,9 @@ Filter by human-readable username (e.g., `D012345`, `technical_user_xyz`), not t
 ### Discovery — what's tracked?
 
 ```
-1. hermes_list_attributes(attribute_name="target_type") → all audited resource types
-2. hermes_list_attributes(attribute_name="action") → all tracked actions
-3. hermes_list_attributes(attribute_name="outcome") → valid outcome values
+1. hermes_list_attributes(attribute="target_type") → all audited resource types
+2. hermes_list_attributes(attribute="action") → all tracked actions
+3. hermes_list_attributes(attribute="outcome") → valid outcome values
 4. Use results to construct precise queries
 ```
 

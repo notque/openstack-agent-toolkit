@@ -1,195 +1,138 @@
 # CADF Event Format Reference
 
-CADF (Cloud Auditing Data Federation) is the DMTF standard used by Hermes to structure audit events. Every action in SAP Converged Cloud generates a CADF event.
+Source: [sapcc/go-api-declarations/cadf/event.go](https://github.com/sapcc/go-api-declarations/blob/main/cadf/event.go)
 
 ## Event Structure
 
 ```json
 {
+  "typeURI": "http://schemas.dmtf.org/cloud/audit/1.0/event",
   "id": "event-uuid",
+  "eventTime": "2024-03-15T14:22:01.000000+00:00",
   "eventType": "activity",
-  "eventTime": "2024-03-15T14:22:01.234Z",
   "action": "update",
   "outcome": "success",
+  "reason": {
+    "reasonType": "HTTP",
+    "reasonCode": "200"
+  },
   "initiator": {
-    "id": "user-uuid",
-    "name": "D012345",
     "typeURI": "service/security/account/user",
-    "domain_id": "domain-uuid",
-    "project_id": "project-uuid"
+    "id": "user-keystone-uuid",
+    "name": "I810033",
+    "domain": "monsoon3",
+    "host": {
+      "address": "10.0.0.1",
+      "agent": "python-openstackclient/6.0.0"
+    },
+    "project_id": "project-uuid",
+    "domain_id": "domain-uuid"
   },
   "target": {
-    "id": "resource-uuid",
     "typeURI": "compute/server",
-    "name": "my-server-01",
-    "project_id": "project-uuid"
+    "id": "resource-uuid",
+    "name": "my-server",
+    "project_id": "project-uuid",
+    "domain_id": "domain-uuid"
   },
   "observer": {
-    "id": "observer-uuid",
     "typeURI": "service/compute",
+    "id": "nova-service-uuid",
     "name": "nova"
   },
+  "requestPath": "/v2.1/servers/resource-uuid",
   "attachments": [
     {
       "name": "payload",
       "typeURI": "mime:application/json",
       "content": "{\"server\": {\"name\": \"new-name\"}}"
     }
-  ],
-  "requestPath": "/v2.1/servers/resource-uuid"
+  ]
 }
 ```
 
-## Field Definitions
+## Field Reference
 
 ### Top-Level Fields
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `id` | UUID | Unique event identifier. Use with `hermes_get_event`. |
-| `eventType` | string | Always `activity` for API actions. |
-| `eventTime` | ISO 8601 | UTC timestamp of when the action occurred. |
-| `action` | string | The operation: `create`, `update`, `delete`, `read`, `authenticate`, etc. |
-| `outcome` | string | `success`, `failure`, or `pending`. |
-| `requestPath` | string | The API endpoint path that was called. |
+| `typeURI` | string | Always `http://schemas.dmtf.org/cloud/audit/1.0/event` |
+| `id` | string | Unique event UUID |
+| `eventTime` | string | ISO 8601 timestamp (UTC) when the event occurred |
+| `eventType` | string | Usually `activity` |
+| `action` | Action | The operation: `create`, `update`, `delete`, `read`, `authenticate`, `start`, `stop` |
+| `outcome` | Outcome | Result: `success`, `failure`, `pending` |
+| `reason` | Reason | HTTP-level result (reasonType + reasonCode) |
+| `initiator` | Resource | Who performed the action |
+| `target` | Resource | What was acted upon |
+| `observer` | Resource | Which service recorded it |
+| `requestPath` | string | Original HTTP request path |
+| `attachments` | []Attachment | Request/response payloads (may be empty) |
 
-### Initiator (Who)
+### Resource Fields (initiator, target, observer)
 
-| Field | Description |
-|-------|-------------|
-| `initiator.id` | Keystone user UUID |
-| `initiator.name` | Human-readable username (this is what you filter on) |
-| `initiator.typeURI` | Always `service/security/account/user` for human users |
-| `initiator.domain_id` | Domain the user belongs to |
-| `initiator.project_id` | Project scope of the action |
+| Field | Type | Description |
+|-------|------|-------------|
+| `typeURI` | string | Resource type in slash format (e.g., `compute/server`) |
+| `id` | string | UUID of the resource |
+| `name` | string | Human-readable name |
+| `domain` | string | Domain name (for initiator) |
+| `host` | Host | Client host info (for initiator) |
+| `project_id` | string | OpenStack project UUID (SAP CC extension) |
+| `domain_id` | string | OpenStack domain UUID (SAP CC extension) |
+| `project_name` | string | Project name (SAP CC extension) |
+| `domain_name` | string | Domain name (SAP CC extension) |
+| `app_credential_id` | string | If authenticated via app credential |
 
-### Target (What Was Acted On)
+### Host Fields (initiator.host)
 
-| Field | Description |
-|-------|-------------|
-| `target.id` | UUID of the resource (server, port, volume, etc.) |
-| `target.typeURI` | Resource type in slash format (see table below) |
-| `target.name` | Human-readable resource name (if available) |
-| `target.project_id` | Project that owns the resource |
+| Field | Type | Description |
+|-------|------|-------------|
+| `address` | string | Client IP address |
+| `agent` | string | User agent string (e.g., `python-openstackclient/6.0.0`) |
 
-### Observer (Which Service Recorded It)
+### Attachment Fields
 
-| Field | Description |
-|-------|-------------|
-| `observer.id` | Service instance UUID |
-| `observer.typeURI` | Service type (e.g., `service/compute`) |
-| `observer.name` | Service name (e.g., `nova`, `neutron`) |
-
-### Attachments (Request/Response Details)
-
-| Field | Description |
-|-------|-------------|
-| `attachments[].name` | Typically `payload` or `request`/`response` |
-| `attachments[].typeURI` | MIME type, usually `mime:application/json` |
-| `attachments[].content` | JSON string of the request body or response |
-
-Attachments are the key to answering "what exactly changed?" — they contain the API request payload showing which fields were modified and to what values.
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Attachment label (e.g., `payload`, `request`, `response`) |
+| `typeURI` | string | MIME type (e.g., `mime:application/json`) |
+| `content` | any | Serialized content (usually JSON string) |
 
 ## Common target_type Values
 
-### Compute (Nova)
+Obtained via `hermes_list_attributes(attribute="target_type")`:
 
-| target_type | Resource |
-|-------------|----------|
-| `compute/server` | Virtual machine instance |
-| `compute/keypair` | SSH keypair |
-| `compute/server-group` | Server anti-affinity group |
-| `compute/flavor` | Instance type definition |
+| target_type | Service | Resource |
+|-------------|---------|----------|
+| `compute/server` | Nova | Virtual machine |
+| `network/port` | Neutron | Network port |
+| `network/security-group` | Neutron | Security group |
+| `network/floatingip` | Neutron | Floating IP |
+| `network/router` | Neutron | Router |
+| `volume/volume` | Cinder | Block storage volume |
+| `identity/project` | Keystone | Project |
+| `identity/user` | Keystone | User account |
+| `identity/credential` | Keystone | Application credential |
+| `dns/zone` | Designate | DNS zone |
+| `dns/recordset` | Designate | DNS record |
+| `image/image` | Glance | VM image |
+| `key-manager/secret` | Barbican | Secret/certificate |
+| `loadbalancer/loadbalancer` | Octavia | Load balancer |
+| `share/share` | Manila | File share |
 
-### Networking (Neutron)
+## CLI Reference
 
-| target_type | Resource |
-|-------------|----------|
-| `network/port` | Virtual network interface |
-| `network/network` | Virtual network |
-| `network/subnet` | IP subnet |
-| `network/router` | Virtual router |
-| `network/security-group` | Security group |
-| `network/security-group-rule` | Individual firewall rule |
-| `network/floatingip` | Floating IP address |
+For command-line audit access outside of agents: [hermescli](https://github.com/sapcc/hermescli)
 
-### Identity (Keystone)
+```bash
+# List recent events
+hermescli event list --time '>=2024-03-15T00:00:00Z'
 
-| target_type | Resource |
-|-------------|----------|
-| `identity/project` | Project/tenant |
-| `identity/user` | User account |
-| `identity/role-assignment` | Role grant/revoke |
-| `identity/application-credential` | App credential |
-| `identity/OS-TRUST/trust` | Trust delegation |
+# Filter by target type
+hermescli event list --target-type compute/server
 
-### Block Storage (Cinder)
-
-| target_type | Resource |
-|-------------|----------|
-| `storage/volume` | Block volume |
-| `storage/snapshot` | Volume snapshot |
-| `storage/backup` | Volume backup |
-
-### DNS (Designate)
-
-| target_type | Resource |
-|-------------|----------|
-| `dns/zone` | DNS zone |
-| `dns/recordset` | DNS record set |
-
-### Load Balancing (Octavia)
-
-| target_type | Resource |
-|-------------|----------|
-| `load-balancer/loadbalancer` | Load balancer |
-| `load-balancer/listener` | LB listener |
-| `load-balancer/pool` | LB backend pool |
-| `load-balancer/member` | Pool member |
-
-### Object Storage (Swift)
-
-| target_type | Resource |
-|-------------|----------|
-| `object-store/container` | Swift container |
-| `object-store/object` | Stored object |
-
-## Common action Values
-
-| Action | Meaning |
-|--------|---------|
-| `create` | New resource created |
-| `update` | Existing resource modified |
-| `delete` | Resource removed |
-| `read` | Resource details retrieved (not always tracked) |
-| `authenticate` | Login/token creation |
-| `start` | Server/service started |
-| `stop` | Server/service stopped |
-| `reboot` | Server rebooted |
-| `attach` | Volume/port attached |
-| `detach` | Volume/port detached |
-| `resize` | Server flavor changed |
-| `migrate` | Server moved to different host |
-
-## Querying Tips
-
-**By resource lifecycle:**
-```
-target_id=<uuid>, sort=time:asc → full creation-to-deletion history
-```
-
-**By user activity:**
-```
-initiator_name=<username>, time_gte=<start> → all actions by user in window
-```
-
-**By failure investigation:**
-```
-outcome=failure, target_type=compute/server → all failed compute operations
-```
-
-**By security review:**
-```
-action=authenticate, outcome=failure → failed login attempts
-action=delete, target_type=identity/role-assignment → permission removals
+# Get event detail
+hermescli event show <event-uuid>
 ```
