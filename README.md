@@ -45,7 +45,7 @@ Copy skills to your agent's skills location:
 
 | Plugin | Description |
 |--------|-------------|
-| [sapcc](plugins/sapcc/) | All SAP CC skills and MCP server configuration. Covers compute, networking, storage, identity, quota, audit, metrics, registry, and endpoint services. |
+| [sapcc](plugins/sapcc/) | All SAP CC skills and MCP server configuration. Covers compute, networking, storage, identity, quota, audit, metrics, registry, endpoint services, DNS, secrets, object storage, file systems, load balancing, images, bare metal, and autoscaling. |
 
 ### Skills
 
@@ -60,6 +60,14 @@ Copy skills to your agent's skills location:
 | [sapcc-metrics](plugins/sapcc/skills/sapcc-metrics/) | Maia | PromQL queries, metric discovery, monitoring |
 | [sapcc-registry](plugins/sapcc/skills/sapcc-registry/) | Keppel | Container images, vulnerability status, federation |
 | [sapcc-connectivity](plugins/sapcc/skills/sapcc-connectivity/) | Archer | Private endpoint services, service discovery |
+| [sapcc-dns](plugins/sapcc/skills/sapcc-dns/) | Designate | DNS zones, recordsets, FQDN management |
+| [sapcc-secrets](plugins/sapcc/skills/sapcc-secrets/) | Barbican | Secret metadata, certificate inventory, audit |
+| [sapcc-object-storage](plugins/sapcc/skills/sapcc-object-storage/) | Swift | Containers, objects, storage inspection |
+| [sapcc-filesystems](plugins/sapcc/skills/sapcc-filesystems/) | Manila | Shared NFS/CIFS file systems |
+| [sapcc-loadbalancer](plugins/sapcc/skills/sapcc-loadbalancer/) | Octavia | Load balancers, listeners, pools |
+| [sapcc-images](plugins/sapcc/skills/sapcc-images/) | Glance | VM images, snapshots, boot sources |
+| [sapcc-baremetal](plugins/sapcc/skills/sapcc-baremetal/) | Ironic | Physical server nodes, provisioning |
+| [sapcc-autoscaling](plugins/sapcc/skills/sapcc-autoscaling/) | Castellum | Automatic quota scaling, resize operations |
 | [credential-setup](plugins/sapcc/skills/credential-setup/) | Keystone | Guided auth setup with keychain storage |
 
 ### Rules
@@ -85,7 +93,7 @@ Skills use progressive disclosure:
 3. Reference files load on-demand for deep-dive content
 4. Skill context releases when the task completes
 
-10 skills installed = ~500 tokens at startup. Full context only when needed.
+18 skills installed = ~900 tokens at startup. Full context only when needed.
 
 ## Security Philosophy
 
