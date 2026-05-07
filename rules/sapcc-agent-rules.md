@@ -11,6 +11,39 @@
 - SAP CC regions are independent deployments. Credentials and resources do not
   cross region boundaries. Region naming: `<geo>-<country>-<number>` (e.g., `eu-de-1`).
 
+## Tool Visibility Tiers
+
+The MCP server exposes tools in three tiers based on environment configuration:
+
+| Tier | Env Variable | Tools Available | Use Case |
+|------|-------------|-----------------|----------|
+| **Read-only** (default) | `MCP_READ_ONLY=true` | 91 read tools | Safe exploration, investigation, monitoring |
+| **Write-enabled** | `MCP_READ_ONLY=false` | +16 write tools (107 total) | Resource creation, modification, deletion |
+| **Admin** | `MCP_ADMIN_TOOLS=true` | +12 admin tools (119 total) | Cloud admin operations (hypervisors, agents, services) |
+
+### If a tool doesn't appear
+
+- The tool may be gated behind a tier not currently enabled
+- Write tools (marked with \* in skill docs) require `MCP_READ_ONLY=false`
+- Admin tools (marked with † in skill docs) require `MCP_ADMIN_TOOLS=true` AND cloud_admin role
+- Do NOT tell the user the tool doesn't exist — explain which tier enables it
+
+### Write tool safety protocol
+
+All write tools enforce a **confirmed two-call pattern**:
+1. Read the resource first (verify state, confirm identity)
+2. Only then perform the write operation
+3. Verify the result after the write
+
+The `destructive-action-gate` hook blocks destructive writes until the user explicitly approves.
+
+### Admin tool awareness
+
+Admin tools require `cloud_admin` role. If the user's token doesn't have this role:
+- The MCP server will return 403 even if the tool is visible
+- Check `keystone_token_info` to see current roles before attempting admin operations
+- Don't waste API calls on predictably-forbidden operations
+
 ## Pre-Action Checks
 
 - **Check quota before creating resources.** Call `limes_get_project_quota` before

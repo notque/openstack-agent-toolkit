@@ -53,6 +53,12 @@ DESTRUCTIVE_TOOLS: dict[str, str] = {
     "swift_delete_object": "Permanently deletes the object. Cannot be undone.",
     # Glance - images
     "glance_delete_image": "Permanently deletes the image. VMs using it as a base are unaffected, but no new VMs can boot from it.",
+    # Neutron - floating IPs (PR #13)
+    "neutron_delete_floating_ip": "Releases the floating IP back to the pool. External access via this IP is lost immediately.",
+    # Nova - create (not destructive but resource-consuming)
+    # Cinder - create (not destructive but resource-consuming)
+    # Ironic - admin power state changes
+    "ironic_node_power_state": "Changes physical server power state. May disrupt running workloads on bare metal.",
 }
 
 # Nova server actions that are destructive (not all actions are)
@@ -114,12 +120,19 @@ def main() -> None:
         sys.exit(0)  # Not a destructive tool — allow
 
     # Build the block message
-    server_id = tool_input.get("server_id", tool_input.get("id", tool_input.get("volume_id", "unknown")))
+    # Extract target identifier from any common ID field
+    target_id = "unknown"
+    for key in ("server_id", "id", "volume_id", "floatingip_id", "node_id",
+                "zone_id", "event_id", "secret_id", "share_id", "loadbalancer_id",
+                "container", "object", "name"):
+        if key in tool_input and tool_input[key]:
+            target_id = str(tool_input[key])
+            break
     action_desc = tool_input.get("action", tool_name.split("_", 1)[-1] if "_" in tool_name else tool_name)
 
     msg = f"BLOCKED: Destructive action requires approval.\n"
     msg += f"  Tool: {tool_name}\n"
-    msg += f"  Target: {server_id}\n"
+    msg += f"  Target: {target_id}\n"
     if consequence:
         msg += f"  Impact: {consequence}\n"
     msg += f"\nThe user must approve this action before it can proceed."
