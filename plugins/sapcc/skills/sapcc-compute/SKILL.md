@@ -12,7 +12,6 @@ metadata:
   service: [nova]
   task: [list, inspect, debug, lifecycle]
   persona: [developer, platform-engineer]
-allowed-tools: [Read]
 ---
 
 # SAP CC Compute (Nova)
@@ -147,3 +146,20 @@ Server is ACTIVE but unreachable.
 - **Host ID is semi-sensitive**: While opaque, \`host_id\` reveals co-location (same hash = same hypervisor). Avoid exposing it in shared contexts without need.
 - **Audit trail**: All server actions generate Hermes events. Inform users that actions are logged with their credential identity.
 - **Cross-project access**: Nova operations are scoped to the authenticated project. You cannot see or act on servers in other projects without re-scoping credentials.
+
+## Cross-Service References
+
+| Need | Service | Tool |
+|------|---------|------|
+| Network interfaces for a server | Neutron | `neutron_list_ports(device_id=<server_uuid>)` |
+| Attached volumes | Cinder | `cinder_list_volumes` → filter by attachments[].server_id |
+| Quota before creating | Limes | `limes_get_project_quota(service=compute)` |
+| Who modified this server | Hermes | `hermes_list_events(target_type=compute/server, target_id=<uuid>)` |
+| CPU/memory metrics | Maia | `maia_query` with `vm_cpu_seconds_total`, `vm_memory_usage_bytes` |
+| Security groups on ports | Neutron | `neutron_list_ports` → then `neutron_list_security_groups` |
+
+## Routing
+
+| User need | Action |
+|-----------|--------|
+| Flavor naming and selection | Read [flavor-families.md](references/flavor-families.md) |

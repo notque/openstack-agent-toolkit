@@ -9,7 +9,6 @@ metadata:
   service: [hermes]
   task: [investigate, compliance, trace, audit]
   persona: [platform-engineer, security, developer]
-allowed-tools: [Read]
 ---
 
 # SAP CC Audit (Hermes)
@@ -183,3 +182,19 @@ Audit data is sensitive. It reveals:
 - **Which resources** they accessed (infrastructure topology)
 
 Only query audit data scoped to the authenticated project. Do not expose audit data containing other users' actions or resource details without confirming the requester has legitimate need. The MCP server enforces project-scoped access, but be judicious in what you surface.
+
+## Cross-Service References
+
+| Need | Service | Tool |
+|------|---------|------|
+| Server details for compute/server events | Nova | `nova_get_server(<target_id>)` |
+| Port details for network/port events | Neutron | `neutron_list_ports` |
+| Volume details for volume events | Cinder | `cinder_get_volume(<target_id>)` |
+| Who is the initiator (token context) | Keystone | `keystone_token_info` |
+| Resource quota impact of actions | Limes | `limes_get_project_quota` |
+
+## Routing
+
+| User need | Action |
+|-----------|--------|
+| Understanding CADF event structure | Read [cadf-event-format.md](references/cadf-event-format.md) |

@@ -4,6 +4,10 @@ description: >
   Archer endpoint service management for private network connectivity in SAP Converged Cloud.
   Triggers: endpoint service, private link, archer, private connectivity, service endpoint, internal access, cross-project access
 version: 1.0.0
+metadata:
+  service: [archer]
+  task: [discover, connect, debug]
+  persona: [developer, platform-engineer]
 ---
 
 # SAP CC Private Connectivity (Archer)

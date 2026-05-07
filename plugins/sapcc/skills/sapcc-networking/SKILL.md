@@ -188,3 +188,9 @@ Step 4: Correlate ports to servers
 ## Reference Files
 
 - `references/security-group-patterns.md` — Common SAP CC security group configurations and templates
+
+## Routing
+
+| User need | Action |
+|-----------|--------|
+| Common security group configurations | Read [security-group-patterns.md](references/security-group-patterns.md) |

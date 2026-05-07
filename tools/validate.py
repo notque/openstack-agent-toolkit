@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-KEBAB_RE = re.compile(r"^[a-z][a-z0-9]+(-[a-z0-9]+)*$")
+KEBAB_RE = re.compile(r"^[a-z][a-z0-9]*(-[a-z0-9]+)*$")
 
 errors: list[str] = []
 
@@ -120,6 +120,11 @@ def validate_plugin(plugin_dir: Path) -> None:
     # Claude Code manifest
     validate_json(plugin_dir / ".claude-plugin" / "plugin.json", ["name"])
 
+    # Codex manifest (optional, but validate if present)
+    codex_json = plugin_dir / ".codex-plugin" / "plugin.json"
+    if codex_json.exists():
+        validate_json(codex_json, ["name"])
+
     # MCP config
     mcp_path = plugin_dir / ".mcp.json"
     if mcp_path.exists():
@@ -164,8 +169,14 @@ def main() -> None:
             sys.exit(1)
         validate_plugin(plugin_dir)
     else:
-        # Marketplace manifest
+        # Marketplace manifest (Claude Code)
         validate_marketplace(REPO_ROOT / ".claude-plugin" / "marketplace.json")
+
+        # Marketplace manifest (Agents/Codex)
+        agents_marketplace = REPO_ROOT / ".agents" / "plugins" / "marketplace.json"
+        if agents_marketplace.exists():
+            print(f"Validating agents marketplace: {agents_marketplace.relative_to(REPO_ROOT)}")
+            validate_json(agents_marketplace, ["name", "plugins"])
 
         # All plugins
         if plugins_dir.is_dir():

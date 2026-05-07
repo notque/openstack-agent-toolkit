@@ -10,7 +10,6 @@ metadata:
   service: [keystone]
   task: [auth, debug, manage, discover]
   persona: [developer, platform-engineer, security]
-allowed-tools: [Read]
 ---
 
 # SAP CC Identity (Keystone)
@@ -181,3 +180,9 @@ Order matters — create new BEFORE deleting old:
 - **sapcc-quota** — check `limes_get_project_quota` to see what resources your project can use
 - **sapcc-audit** — use `hermes_list_events` with `initiator_name` to see who did what in a project
 - **Service catalog** — determines which other MCP tools (nova_, neutron_, limes_, etc.) are available
+
+## Routing
+
+| User need | Action |
+|-----------|--------|
+| Domain and project hierarchy details | Read [domain-project-model.md](references/domain-project-model.md) |

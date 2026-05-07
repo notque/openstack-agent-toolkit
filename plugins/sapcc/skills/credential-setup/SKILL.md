@@ -171,3 +171,9 @@ Only after Phase 6 succeeds:
 | "Unauthorized" with valid credential | Roles insufficient for requested operation | List credential roles vs. required roles; recreate with correct role set |
 | MCP server won't start | Malformed config JSON or missing binary | Validate JSON syntax; confirm `openstack-mcp-server` is in PATH |
 | Works in terminal but not in Claude Code | Environment differences (PATH, keychain access) | Ensure Claude Code's process has keychain access; use full path to `security`/`secret-tool` |
+
+## Routing
+
+| User need | Action |
+|-----------|--------|
+| Authentication methods comparison | Read [auth-methods.md](references/auth-methods.md) |

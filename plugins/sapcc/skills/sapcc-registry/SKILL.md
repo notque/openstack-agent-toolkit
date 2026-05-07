@@ -4,6 +4,10 @@ description: >
   Keppel container registry management for SAP Converged Cloud.
   Triggers: container image, registry, docker image, keppel, repository, manifest, tag, vulnerability scan, image version
 version: 1.0.0
+metadata:
+  service: [keppel]
+  task: [scan, inspect, manage]
+  persona: [developer, devops]
 ---
 
 # SAP CC Container Registry (Keppel)
@@ -148,3 +152,9 @@ Causes:
 - **Vulnerability scanning is passive.** Keppel scans for known CVEs but does NOT block image pulls. A `Critical` vulnerability status is informational only — the image remains pullable.
 - **Account access follows OpenStack RBAC.** Token scope determines which accounts are visible. Cross-project image sharing requires explicit account policies.
 - **Digest exposure is safe.** Sharing a `sha256:...` digest does not grant pull access — authentication is still enforced. But digests do confirm whether two environments run the same build.
+
+## Routing
+
+| User need | Action |
+|-----------|--------|
+| Image lifecycle and vulnerability workflow | Read [image-lifecycle.md](references/image-lifecycle.md) |

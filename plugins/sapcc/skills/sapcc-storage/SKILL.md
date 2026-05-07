@@ -4,6 +4,10 @@ description: >
   Block storage operations via Cinder. Triggers: volume, disk, storage,
   block storage, attachment, cinder.
 version: 1.0.0
+metadata:
+  service: [cinder]
+  task: [manage, inspect, debug]
+  persona: [developer, platform-engineer]
 ---
 
 # SAP CC Block Storage (Cinder)
@@ -110,3 +114,12 @@ The volume's attachment record was not cleaned up. This happens when a server is
 - **Snapshot inheritance.** Deleting a volume does not delete its snapshots, but orphaned snapshots still consume quota and may contain sensitive data.
 - **Cross-project visibility.** Volumes are project-scoped. You cannot see or operate on volumes in other projects without re-scoping credentials.
 - **Audit trail.** All volume operations (create, delete, attach, detach, extend) are logged in Hermes. Use this to verify who performed destructive actions.
+
+## Cross-Service References
+
+| Need | Service | Tool |
+|------|---------|------|
+| Server a volume is attached to | Nova | `nova_get_server(<attachments[].server_id>)` |
+| Who created/deleted/modified a volume | Hermes | `hermes_list_events(target_type=volume, target_id=<uuid>)` |
+| Block storage quota remaining | Limes | `limes_get_project_quota(service=block-storage)` |
+| Server's other volumes | Nova + Cinder | Get server → list volumes → filter by server_id |

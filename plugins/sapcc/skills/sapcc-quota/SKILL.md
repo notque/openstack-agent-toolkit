@@ -4,6 +4,10 @@ description: >
   Limes quota and usage management for SAP Converged Cloud.
   Triggers: quota, usage, capacity, resource limit, how much, running out, limes, burst
 version: 1.0.0
+metadata:
+  service: [limes]
+  task: [capacity, plan, audit]
+  persona: [platform-engineer, developer]
 ---
 
 # SAP CC Quota & Usage (Limes)
@@ -206,3 +210,19 @@ Quota data reveals project sizing, resource allocation strategy, and capacity he
 - Cluster capacity = total platform size
 
 Only query at the scope you have legitimate access to. The MCP server enforces token-based access, but be aware that quota data you return to users should be scope-appropriate.
+
+## Cross-Service References
+
+| Need | Service | Tool |
+|------|---------|------|
+| Actual compute instances consuming quota | Nova | `nova_list_servers` |
+| Actual volumes consuming storage quota | Cinder | `cinder_list_volumes` |
+| Actual ports/networks consuming network quota | Neutron | `neutron_list_ports`, `neutron_list_networks` |
+| Who changed quota settings | Hermes | `hermes_list_events(target_type=resources/project)` |
+| Current project/domain context | Keystone | `keystone_token_info` |
+
+## Routing
+
+| User need | Action |
+|-----------|--------|
+| Mapping services to quota resource names | Read [quota-services-mapping.md](references/quota-services-mapping.md) |

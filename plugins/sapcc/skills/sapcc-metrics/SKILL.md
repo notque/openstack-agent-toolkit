@@ -4,6 +4,10 @@ description: >
   Maia metrics querying for SAP Converged Cloud (Prometheus-as-a-Service).
   Triggers: metrics, monitoring, prometheus, promql, CPU usage, memory usage, maia, dashboard, alert, performance
 version: 1.0.0
+metadata:
+  service: [maia]
+  task: [query, monitor, debug]
+  persona: [developer, devops]
 ---
 
 # SAP CC Metrics (Maia)
@@ -161,3 +165,18 @@ Metrics reveal operational state: CPU patterns, memory pressure, disk growth rat
 - Potential vulnerabilities (overloaded systems, resource exhaustion)
 
 Treat metric data as internal/confidential. Only query what's needed for the task at hand.
+
+## Cross-Service References
+
+| Need | Service | Tool |
+|------|---------|------|
+| Map instance label to server name | Nova | `nova_get_server(<instance_id>)` |
+| Correlate resource usage with quota | Limes | `limes_get_project_quota` |
+| Investigate anomalies in audit trail | Hermes | `hermes_list_events` |
+| Network metrics correlation | Neutron | `neutron_list_ports(device_id=<instance_id>)` |
+
+## Routing
+
+| User need | Action |
+|-----------|--------|
+| PromQL query patterns for SAP CC | Read [promql-patterns.md](references/promql-patterns.md) |
