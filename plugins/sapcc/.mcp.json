@@ -6,7 +6,9 @@
         "OS_AUTH_URL": "${OS_AUTH_URL}",
         "OS_APPLICATION_CREDENTIAL_ID": "${OS_APPLICATION_CREDENTIAL_ID}",
         "OS_APPCRED_SECRET_CMD": "${OS_APPCRED_SECRET_CMD}",
-        "OS_REGION_NAME": "${OS_REGION_NAME}"
+        "OS_REGION_NAME": "${OS_REGION_NAME}",
+        "MCP_READ_ONLY": "${MCP_READ_ONLY:-true}",
+        "MCP_ADMIN_TOOLS": "${MCP_ADMIN_TOOLS:-false}"
       }
     }
   }

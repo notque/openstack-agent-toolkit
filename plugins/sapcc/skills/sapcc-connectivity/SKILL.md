@@ -16,11 +16,12 @@ Archer is SAP CC's endpoint service for private network connectivity between pro
 
 ## MCP Tools
 
-| Tool | Purpose | Required Params |
-|------|---------|-----------------|
-| `archer_list_services` | List services available for endpoint creation | (optional: `status`) |
-| `archer_list_endpoints` | List endpoints in current project | (optional: `service_id`, `status`) |
+### Read Tools
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `archer_list_services` | List services available for endpoint creation | `status` (optional) |
 | `archer_get_service` | Get service detail by UUID | `service_id` |
+| `archer_list_endpoints` | List endpoints in current project | `service_id`, `status` (optional) |
 | `archer_get_endpoint` | Get endpoint detail by UUID | `endpoint_id` |
 
 ## Archer Model

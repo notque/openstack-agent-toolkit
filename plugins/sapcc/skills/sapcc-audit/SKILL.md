@@ -17,11 +17,21 @@ Hermes is SAP CC's centralized audit service. It records all API actions across 
 
 ## MCP Tools
 
+### Read Tools
+
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `hermes_list_events` | Search/filter audit events | `target_type`, `target_id`, `initiator_name`, `action`, `outcome`, `time_gte`, `time_lte`, `limit`, `sort` |
-| `hermes_get_event` | Full CADF event by UUID | `event_id` |
-| `hermes_list_attributes` | Discover valid filter values | `attribute_name` (one of: target_type, action, outcome, observer_type, initiator_type) |
+| `hermes_list_events` | Search/filter audit events | `target_type`, `target_id`, `initiator_name`, `initiator_id`, `action`, `outcome`, `observer_type`, `time_gte`, `time_lte`, `limit`, `offset`, `sort` |
+| `hermes_get_event` | Full CADF event by UUID | `event_id` (**required**) |
+| `hermes_list_attributes` | Discover valid filter values | `attribute` (**required**: target_type, action, outcome, observer_type, initiator_type) |
+
+> All Hermes tools are read-only. No write or admin tiers exist — audit events are immutable.
+
+### Guardrails
+
+- **10,000 offset ceiling**: Queries beyond offset 10,000 return HTTP 500. Use time-based windowing to stay below this limit.
+- **Time format**: ISO 8601 UTC timestamps (e.g., `2024-03-15T14:22:00Z`)
+- **Sort format**: `field:direction` (e.g., `time:desc`, `target_type:asc,time:desc`)
 
 ## CADF Event Model
 
@@ -49,7 +59,7 @@ See `references/cadf-event-format.md` for the full event schema.
 Correct: `compute/server`, `network/port`, `identity/project`, `dns/zone`
 Wrong: `nova/server`, `server`, `neutron/port`, `VM`
 
-The format is `<service-category>/<resource>`. Call `hermes_list_attributes` with `attribute_name=target_type` to discover valid values if unsure.
+The format is `<service-category>/<resource>`. Call `hermes_list_attributes` with `attribute=target_type` to discover valid values if unsure.
 
 ### 2. Time filters use PREFIX syntax
 
@@ -63,13 +73,13 @@ The value is a plain ISO 8601 timestamp. Do NOT embed operators in the value str
 
 Valid outcomes: `success`, `failure`, `pending`
 
-NOT: `200`, `404`, `500`, `created`, `error`. Use `hermes_list_attributes` with `attribute_name=outcome` to confirm.
+NOT: `200`, `404`, `500`, `created`, `error`. Use `hermes_list_attributes` with `attribute=outcome` to confirm.
 
 ### 4. action values are present-tense verbs
 
 Valid: `create`, `update`, `delete`, `read`, `authenticate`, `start`, `stop`
 
-NOT past tense: `created`, `updated`, `deleted`. NOT nouns: `creation`, `deletion`. Call `hermes_list_attributes` with `attribute_name=action` to see all tracked actions.
+NOT past tense: `created`, `updated`, `deleted`. NOT nouns: `creation`, `deletion`. Call `hermes_list_attributes` with `attribute=action` to see all tracked actions.
 
 ### 5. hermes_list_attributes is your discovery tool — call it first
 
@@ -93,7 +103,23 @@ Events appear seconds to minutes after the action occurs. If you just performed 
 
 Filter by human-readable username (e.g., `D012345`, `technical_user_xyz`), not the user's Keystone UUID. This is the name that appears in Keystone token info.
 
-### 10. Full event detail includes request/response attachments
+### 10. Hard limit at 10,000 events — API returns 500 beyond this offset
+
+The Hermes API has a hard ceiling at offset 10,000. If you set `limit=15000` or paginate past 10,000 events, the server returns HTTP 500 (not a helpful error). For large audit queries:
+
+- **Narrow with time ranges** — use `time_gte`/`time_lte` to window your query below 10k results
+- **Narrow with filters** — add `target_type`, `action`, or `outcome` to reduce result set
+- **Use time-based cursoring** — query a time window, note the last event's time, use it as the next window's boundary
+
+The CLI tool [hermescli](https://github.com/sapcc/hermescli) has an `--over-10k-fix` flag that automates this workaround. The MCP tool does not — you must manage it manually by keeping queries scoped.
+
+### 11. Sort supports multiple keys beyond just time
+
+Valid sort fields: `time`, `observer_type`, `target_type`, `target_id`, `initiator_type`, `initiator_id`, `outcome`, `action`.
+
+Each supports `:asc` or `:desc` suffix. Multiple sort keys can be comma-separated: `sort="target_type:asc,time:desc"`. Default direction is ascending if omitted.
+
+### 12. Full event detail includes request/response attachments
 
 `hermes_get_event` returns the complete CADF event including `attachments` — these contain the actual API request body and response. Essential for answering "what exactly changed?" (e.g., which field was updated, what value was set).
 
@@ -144,9 +170,9 @@ Filter by human-readable username (e.g., `D012345`, `technical_user_xyz`), not t
 ### Discovery — what's tracked?
 
 ```
-1. hermes_list_attributes(attribute_name="target_type") → all audited resource types
-2. hermes_list_attributes(attribute_name="action") → all tracked actions
-3. hermes_list_attributes(attribute_name="outcome") → valid outcome values
+1. hermes_list_attributes(attribute="target_type") → all audited resource types
+2. hermes_list_attributes(attribute="action") → all tracked actions
+3. hermes_list_attributes(attribute="outcome") → valid outcome values
 4. Use results to construct precise queries
 ```
 
@@ -162,12 +188,18 @@ Most common causes (check in order):
 4. **Ingestion delay** — If the action just happened, wait 30-60 seconds.
 5. **Wrong project scope** — Hermes returns events scoped to the authenticated project. Events in other projects are invisible.
 
-### Too many results
+### Too many results / HTTP 500 on large queries
 
+**If you get HTTP 500**: You've likely hit the 10,000 offset ceiling. The fix:
+1. Add time range (`time_gte`/`time_lte`) to bound the window below 10k results
+2. Use time-based cursoring: query a window, take last event's time as next `time_lte`
+
+**To reduce results generally**:
 1. Add `target_type` filter to narrow to specific service
 2. Add time range (`time_gte`/`time_lte`) to bound the window
 3. Add `action` filter if looking for specific operations (e.g., only `delete`)
 4. Add `outcome` filter if only interested in failures
+5. Never set `limit` above 10,000 — the API will 500
 
 ### Event detail missing attachments
 

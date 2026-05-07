@@ -18,5 +18,9 @@ __pycache__/
 dist/
 build/
 
-# Local Claude settings
+# Claude Code session state
+.claude/session-reads.txt
 .claude/settings.local.json
+.claude/scheduled_tasks.json
+.claude/worktrees/
+.claude/plans/

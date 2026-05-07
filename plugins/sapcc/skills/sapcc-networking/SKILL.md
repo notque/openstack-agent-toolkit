@@ -16,12 +16,31 @@ Investigate and debug network topology, port state, and security group rules in 
 
 ## MCP Tools
 
-| Tool | Purpose | Key Filters |
-|------|---------|-------------|
+### Read Tools
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
 | `neutron_list_networks` | List networks | `name`, `status` |
 | `neutron_list_subnets` | List subnets (CIDR, gateway, DHCP) | `network_id` |
 | `neutron_list_ports` | List ports (MAC, fixed IPs, device_owner) | `network_id`, `device_id`, `status` |
 | `neutron_list_security_groups` | List security groups with rules | — |
+| `neutron_list_routers` | List routers and their external gateway info | — |
+| `neutron_list_floating_ips` | List floating IPs and their port associations | `status`, `floating_ip_address` |
+| `neutron_list_trunks` | List trunk ports and their subports | — |
+| `neutron_list_network_ip_availabilities` | IP usage statistics per network/subnet | `network_id` |
+| `neutron_list_bgpvpn_interconnections` | List BGPVPN interconnections | — |
+
+### Write Tools (requires MCP_READ_ONLY=false)
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `neutron_create_security_group_rule` | Add an ingress/egress rule to a security group | `security_group_id`, `direction`, `protocol`, `port_range_min`, `port_range_max` |
+| `neutron_delete_security_group_rule` | Remove a security group rule | `rule_id` |
+| `neutron_create_floating_ip` | Allocate a floating IP from an external network | `floating_network_id`, `port_id` (optional) |
+| `neutron_delete_floating_ip` | Release a floating IP | `floating_ip_id` |
+
+### Admin Tools (requires MCP_ADMIN_TOOLS=true)
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `neutron_list_agents` | List Neutron agents (DHCP, L3, OVS) and their state | — |
 
 ## Gotchas
 

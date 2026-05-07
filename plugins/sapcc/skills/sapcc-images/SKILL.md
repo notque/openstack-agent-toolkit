@@ -1,144 +1,83 @@
 ---
 name: sapcc-images
 description: >
-  Image management via Glance in SAP Converged Cloud.
-  Triggers: image, glance, VM image, OS image, snapshot, AMI, disk image, boot image
+  Image operations via Glance. Triggers: image, glance, ami, snapshot,
+  visibility, boot image. NOT for: container images (use sapcc-registry/Keppel).
 version: 1.0.0
 metadata:
   service: [glance]
-  task: [inspect, manage, debug]
+  task: [manage, inspect, debug]
   persona: [developer, platform-engineer]
 ---
 
 # SAP CC Images (Glance)
 
-Inspect Glance images: list available images, check details, and understand image properties. Glance stores disk images used to boot Nova servers.
+Inspect and list VM images: find available boot images, check image status, understand visibility and format.
 
 ## MCP Tools
 
+### Read Tools
+
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `glance_list_images` | List images available to current project | `name`, `status`, `visibility`, `owner` (returns: ID, name, status, visibility, disk/container format, size) |
-| `glance_get_image` | Full detail for a single image | `image_id` (UUID) |
+| `glance_list_images` | List available images | `name`, `status` (queued/saving/active/killed/deleted/deactivated), `visibility` (public/private/shared/community), `owner` |
+| `glance_get_image` | Full image detail by UUID | `image_id` (**required**) |
+| `glance_list_image_members` | List projects an image is shared with | `image_id` (**required**) |
+
+### Admin Tools (requires MCP_ADMIN_TOOLS=true)
+
+| Tool | Purpose | Key Parameters |
+|------|---------|----------------|
+| `glance_list_tasks`† | List image import tasks | `status` (pending/processing/success/failure), `type` |
+
+### Guardrails
+
+- **UUID validation**: `image_id` validated before API call
+- **No write tools**: Image upload/delete not available via MCP (use OpenStack CLI)
+- **Visibility meanings**: `public` = all projects see it; `shared` = explicitly shared via members; `community` = discoverable by all but not in default list
 
 ## Gotchas
 
-### 1. Visibility controls who can see and use an image
+1. **Public images are shared across all projects.** When listing images without an `owner` filter, you will see both project-owned (private) and platform-provided (public) images. Use `visibility=private` to see only your project's images.
 
-| Visibility | Who can see | Who can use |
-|------------|-------------|-------------|
-| `public` | Everyone | Everyone |
-| `private` | Owner project only | Owner project only |
-| `shared` | Owner + explicitly shared projects | Owner + shared projects |
-| `community` | Everyone | Everyone (but not in default listings) |
+2. **Size is in bytes, not GiB.** The `size` field is raw bytes. Divide by 1073741824 to get GiB. A null/zero size means the image data has not been uploaded yet (status will be `queued`).
 
-Most production images are `public` (provided by platform team) or `private` (project-specific snapshots).
+3. **min_disk and min_ram are constraints.** These values (GiB and MiB respectively) define the minimum flavor requirements to boot a server from this image. Nova will reject a boot request if the flavor does not meet these minimums.
 
-### 2. Status "active" = ready to use
+4. **Status "active" is the only bootable state.** Only images with `status=active` can be used to create servers. Images in `queued`, `saving`, or `deactivated` cannot be booted from.
 
-Only `active` images can be used to boot servers. Other statuses:
-- `queued`: Metadata created, no data uploaded yet
-- `saving`: Data currently being uploaded
-- `deactivated`: Administratively disabled (cannot boot, but data exists)
-- `killed`: Upload failed
+5. **Container image vs VM image confusion.** Glance manages VM/bare-metal boot images (qcow2, raw, vmdk). For OCI container images, use Keppel (`sapcc-registry`). Users frequently confuse these.
 
-### 3. Size is in bytes — can be very large
+6. **Deactivated images exist but cannot be used.** An admin can deactivate an image (e.g., due to CVE). It remains visible but cannot boot new servers. Existing servers using it are unaffected.
 
-Image sizes are raw bytes. A typical Linux image is 2-10 GB. Convert: `size / 1024 / 1024 / 1024` for GiB.
-
-### 4. disk_format and container_format matter for compatibility
-
-| disk_format | Description |
-|-------------|-------------|
-| `vmdk` | VMware (most common in SAP CC) |
-| `raw` | Uncompressed disk |
-| `qcow2` | QEMU/KVM compressed |
-| `vhd` | Hyper-V |
-
-Container format is almost always `bare` in practice.
-
-### 5. Public images are platform-provided — don't delete them
-
-Images with `visibility=public` are maintained by the SAP CC platform team. Your project uses them but doesn't own them. You can only modify/delete `private` images you own.
-
-### 6. Image properties contain OS metadata
-
-`glance_get_image` returns properties like `os_type`, `os_distro`, `os_version`, `hw_vif_model`, `hypervisor_type`. Use these to identify the operating system and compatibility requirements.
-
-### 7. Snapshots are private images created from servers
-
-When you snapshot a server, it creates a private Glance image. These consume image quota and storage. Old snapshots should be cleaned up.
-
-### 8. owner field is a project UUID
-
-The `owner` filter accepts a project UUID. Use `keystone_list_projects` to find project UUIDs if needed.
+7. **disk_format determines hypervisor compatibility.** Common formats: `qcow2` (KVM), `vmdk` (VMware), `raw`. In SAP CC, most images are `vmdk` for vSphere-based regions.
 
 ## Common Workflows
 
 ### Find Available Boot Images
 
-```
-1. glance_list_images(visibility=public, status=active)
-2. Review: name, size, disk_format
-3. Look for naming patterns: "Ubuntu 22.04", "SLES 15 SP5", "Windows 2022"
-```
+1. `glance_list_images` with `status=active` and `visibility=public` — see platform-provided images.
+2. Note `min_disk` and `min_ram` to determine flavor requirements.
+3. Check `disk_format` matches the target hypervisor in your availability zone.
 
-### Find Project Snapshots
+### Check Why a Server Boot Failed Due to Image
 
-```
-1. glance_list_images(visibility=private, owner=<project_id>)
-2. These are your project's server snapshots
-3. Check sizes and dates for cleanup candidates
-```
+1. `glance_get_image` with the image UUID from the failed server request.
+2. Verify `status=active` — if not, the image is unusable.
+3. Check `min_disk` and `min_ram` against the chosen flavor — insufficient resources cause boot failure.
+4. Confirm `disk_format` is compatible with the target region's hypervisor.
 
-### Inspect Image Before Booting
+### List Project-Owned Snapshots
 
-```
-1. glance_get_image(image_id=<uuid>)
-2. Check: status=active, disk_format compatible with your hypervisor
-3. Note: min_disk, min_ram requirements
-4. Review os_distro, os_version for the OS
-```
-
-### Find Image Used by a Server
-
-```
-1. nova_get_server(server_id) → note image reference
-2. glance_get_image(image_id) → full image details
-```
-
-## Troubleshooting
-
-### Image not found
-
-- Image may be private to another project
-- Image may have been deleted — check Hermes audit trail
-- Try without filters to see all accessible images
-
-### Cannot boot server from image
-
-- Check image status is `active` (not `deactivated` or `queued`)
-- Check `min_disk` and `min_ram` — flavor must meet minimums
-- Verify disk_format is compatible with the target hypervisor
-
-### Image in "queued" status for a long time
-
-- Upload may have failed silently
-- Check Hermes: `hermes_list_events(target_type=image, target_id=<uuid>)`
-- May need to delete and re-upload
-
-## Security Considerations
-
-- Private images may contain sensitive configurations or credentials baked in
-- Image names and properties reveal infrastructure stack (OS versions, patch levels)
-- Old, unpatched images are a security risk — check os_version against known CVEs
-- Snapshots may capture ephemeral credentials or session data from running servers
+1. `glance_list_images` with `visibility=private` and `owner=<project_id>`.
+2. These are typically server snapshots or custom-uploaded images.
+3. Check `size` to understand storage consumption (counts toward image quota).
 
 ## Cross-Service References
 
 | Need | Service | Tool |
 |------|---------|------|
-| Servers using an image | Nova | `nova_list_servers(image=<image_id>)` |
-| Who created/deleted images | Hermes | `hermes_list_events(target_type=image)` |
-| Image quota usage | Limes | `limes_get_project_quota(service=image)` |
-| Flavors meeting min_disk/min_ram | Nova | `nova_list_flavors` |
+| Server using this image | Nova | `nova_list_servers` (image field in response) |
+| Image quota for the project | Limes | `limes_get_project_quota(service=image)` |
+| Who uploaded/deleted an image | Hermes | `hermes_list_events(target_type=image)` |
+| Container images (OCI) | Keppel | `keppel_list_repositories` |
