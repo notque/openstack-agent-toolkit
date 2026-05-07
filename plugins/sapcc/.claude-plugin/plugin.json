@@ -1,0 +1,16 @@
+{
+  "author": {
+    "name": "SAP Converged Cloud"
+  },
+  "description": "Operate SAP Converged Cloud: compute, networking, storage, identity, quota, audit, metrics, registry, and endpoint services.",
+  "homepage": "https://github.com/notque/openstack-agent-toolkit",
+  "keywords": [
+    "openstack",
+    "sapcc",
+    "converged-cloud"
+  ],
+  "license": "Apache-2.0",
+  "name": "sapcc",
+  "repository": "https://github.com/notque/openstack-agent-toolkit",
+  "version": "1.0.0"
+}
