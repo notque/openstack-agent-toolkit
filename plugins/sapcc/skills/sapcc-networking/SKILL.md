@@ -40,7 +40,7 @@ These are the most common mistakes. Follow them exactly.
 
 4. **Security group rules are additive (whitelist-only).** There is no explicit deny. If traffic is not allowed by any rule, it is denied. You cannot "block port 22" — you can only not allow it.
 
-5. **Ports in DOWN status may be detached OR the VM is shut off.** A DOWN port does not mean a problem — cross-reference with `nova_show_server` to check server power state. ACTIVE port + SHUTOFF server = normal (port state lags).
+5. **Ports in DOWN status may be detached OR the VM is shut off.** A DOWN port does not mean a problem — cross-reference with `nova_get_server` to check server power state. ACTIVE port + SHUTOFF server = normal (port state lags).
 
 6. **`network_id` is required to correlate subnets to networks.** Subnets do not carry the network name. To map the full topology: list networks first, then list subnets filtered by each `network_id`.
 
@@ -131,7 +131,7 @@ Step 3: For each network, list ports
 
 Step 4: Correlate ports to servers
   → Ports with device_owner="compute:nova" have device_id=server_uuid
-  → Use nova_show_server(<device_id>) to get server name/status
+  → Use nova_get_server(<device_id>) to get server name/status
 ```
 
 ## Troubleshooting
@@ -180,7 +180,7 @@ Step 4: Correlate ports to servers
 
 | Need | Service | Tool |
 |------|---------|------|
-| Server name/status for a port's device_id | Nova | `nova_show_server` |
+| Server name/status for a port's device_id | Nova | `nova_get_server` |
 | Who modified a security group? | Hermes | `hermes_list_events(target_type=security_group)` |
 | Network quota remaining | Limes | `limes_get_project_quota` (service: networking) |
 | DNS records for an IP | Designate | Not yet in MCP server |

@@ -5,7 +5,7 @@ description: >-
   hierarchy, authentication context, application credentials, role assignments,
   and service catalog interpretation. Use when: project, domain, authentication,
   roles, token, application credential, keystone, who am I, service catalog.
-version: 1
+version: 1.0.0
 metadata:
   service: [keystone]
   task: [auth, debug, manage, discover]

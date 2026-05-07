@@ -7,7 +7,7 @@ description: >-
   debugging instance issues, performing server actions (start/stop/reboot),
   selecting flavors, or investigating why a server won't start.
   NOT for container workloads (use sapcc-registry) or bare metal.
-version: 1
+version: 1.0.0
 metadata:
   service: [nova]
   task: [list, inspect, debug, lifecycle]

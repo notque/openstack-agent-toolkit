@@ -4,7 +4,7 @@ description: >
   Audit trail investigation on SAP Converged Cloud using Hermes.
   Triggers: audit, who changed, what happened, hermes, events, compliance,
   CADF, activity log, trace action, who did, what was done, event history
-version: 1
+version: 1.0.0
 metadata:
   service: [hermes]
   task: [investigate, compliance, trace, audit]
