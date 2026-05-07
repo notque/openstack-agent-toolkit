@@ -6,7 +6,7 @@
 
 ## Context
 
-We have a working [openstack-mcp-server](https://github.com/notque/openstack-mcp-server) that provides 28+ MCP tools across 8 SAP Converged Cloud services:
+We have a working [openstack-mcp-server](https://github.com/notque/openstack-mcp-server) that provides 55 MCP tools across 8 SAP Converged Cloud services:
 
 | Service | Project | Tools |
 |---------|---------|-------|

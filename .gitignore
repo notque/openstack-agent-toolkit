@@ -17,3 +17,6 @@ __pycache__/
 # Build
 dist/
 build/
+
+# Local Claude settings
+.claude/settings.local.json

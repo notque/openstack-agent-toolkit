@@ -21,6 +21,7 @@ Maia is SAP CC's multi-tenant Prometheus-as-a-Service. Same PromQL query languag
 | `maia_metric_names` | List all available metric names for current project | (none) |
 | `maia_label_values` | Get values for a specific label | `label` (e.g., `__name__`, `instance`, `job`) |
 | `maia_query` | Execute instant PromQL query | `query` (optional: `time`) |
+| `maia_query_range` | Execute range PromQL query over time window | `query`, `start`, `end`, `step` |
 
 ## Maia vs Regular Prometheus
 
@@ -28,7 +29,7 @@ Maia is SAP CC's multi-tenant Prometheus-as-a-Service. Same PromQL query languag
 - **Tenant-isolated** — you only see metrics from your authenticated project
 - **Available metrics vary** — depends on what's instrumented in your project (not all projects have the same metrics)
 - **Read-only** — no recording rules, no alert configuration, no write path via MCP
-- **Instant queries only** — maia_query executes point-in-time queries, not range queries
+- **Instant and range queries** — maia_query executes point-in-time queries; maia_query_range returns time series over a window
 
 ## Gotchas
 
@@ -36,9 +37,9 @@ Maia is SAP CC's multi-tenant Prometheus-as-a-Service. Same PromQL query languag
 
 Maia enforces tenant isolation via the OpenStack token. There is no way to query cross-project metrics. If you need fleet-wide data, check Limes for capacity or use cluster-level monitoring.
 
-### 2. maia_query is INSTANT query only
+### 2. maia_query is INSTANT — use maia_query_range for time series
 
-No range queries (`query_range`) via this tool. You get a single point in time. Use the `time` parameter to query a historical point, but you cannot get a time series of values in one call. For "show me the last hour" requests — you can only sample individual points.
+`maia_query` returns a single point in time. Use the `time` parameter to query a historical point. For time series data ("show me the last hour"), use `maia_query_range` with `start`, `end`, and `step` parameters instead.
 
 ### 3. Always start with maia_metric_names
 

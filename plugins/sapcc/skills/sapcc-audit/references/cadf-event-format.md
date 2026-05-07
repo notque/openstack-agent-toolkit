@@ -13,7 +13,7 @@ CADF (Cloud Auditing Data Federation) is the DMTF standard used by Hermes to str
   "outcome": "success",
   "initiator": {
     "id": "user-uuid",
-    "name": "I810033",
+    "name": "D012345",
     "typeURI": "service/security/account/user",
     "domain_id": "domain-uuid",
     "project_id": "project-uuid"
