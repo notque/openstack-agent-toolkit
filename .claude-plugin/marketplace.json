@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "description": "A plugin marketplace for SAP Converged Cloud agent skills.",
+    "version": "1.0.0"
+  },
+  "name": "openstack-agent-toolkit",
+  "owner": {
+    "name": "SAP Converged Cloud"
+  },
+  "plugins": [
+    {
+      "category": "cloud",
+      "description": "Operate SAP Converged Cloud: compute, networking, storage, identity, quota, audit, metrics, registry, and endpoint services.",
+      "keywords": [
+        "openstack",
+        "sapcc",
+        "converged-cloud"
+      ],
+      "name": "sapcc",
+      "source": "./plugins/sapcc",
+      "version": "1.0.0"
+    }
+  ]
+}
