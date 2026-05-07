@@ -140,25 +140,25 @@ When you ask the agent a question, it auto-selects the appropriate skill:
 
 | Skill | Service | Key Capability |
 |-------|---------|----------------|
-| [sapcc-compute](plugins/sapcc/skills/sapcc-compute/) | Nova | Server lifecycle, flavor selection, cross-service correlation |
-| [sapcc-networking](plugins/sapcc/skills/sapcc-networking/) | Neutron | Network topology, security groups, connectivity debugging |
-| [sapcc-storage](plugins/sapcc/skills/sapcc-storage/) | Cinder | Volume lifecycle, attachment states, performance tiers |
-| [sapcc-identity](plugins/sapcc/skills/sapcc-identity/) | Keystone | Domain/project model, app credentials, service catalog |
-| [sapcc-quota](plugins/sapcc/skills/sapcc-quota/) | Limes | Quota interpretation, capacity planning, usage tracking |
-| [sapcc-audit](plugins/sapcc/skills/sapcc-audit/) | Hermes | CADF events, compliance queries, change investigation |
-| [sapcc-metrics](plugins/sapcc/skills/sapcc-metrics/) | Maia | PromQL queries, metric discovery, monitoring |
-| [sapcc-registry](plugins/sapcc/skills/sapcc-registry/) | Keppel | Container images, vulnerability status, federation |
-| [sapcc-connectivity](plugins/sapcc/skills/sapcc-connectivity/) | Archer | Private endpoint services, service discovery |
-| [sapcc-dns](plugins/sapcc/skills/sapcc-dns/) | Designate | DNS zones, recordsets, zone transfers |
-| [sapcc-loadbalancer](plugins/sapcc/skills/sapcc-loadbalancer/) | Octavia | Load balancers, pools, health monitors |
-| [sapcc-images](plugins/sapcc/skills/sapcc-images/) | Glance | Image management, properties, visibility |
-| [sapcc-object-storage](plugins/sapcc/skills/sapcc-object-storage/) | Swift | Object storage, containers, large objects |
-| [sapcc-secrets](plugins/sapcc/skills/sapcc-secrets/) | Barbican | Secret management, certificates, keys |
-| [sapcc-autoscaling](plugins/sapcc/skills/sapcc-autoscaling/) | Castellum | Autoscaling policies, resource operations |
-| [sapcc-shared-storage](plugins/sapcc/skills/sapcc-shared-storage/) | Manila | Shared file systems, exports, share networks |
-| [sapcc-baremetal](plugins/sapcc/skills/sapcc-baremetal/) | Ironic | Baremetal provisioning, node lifecycle |
-| [sapcc-email](plugins/sapcc/skills/sapcc-email/) | Cronus | Email notifications, SMTP relay |
-| [credential-setup](plugins/sapcc/skills/credential-setup/) | Keystone | Guided auth setup with keychain storage |
+| [sapcc-compute](plugins/sapcc/skills/sapcc-compute/) | [Nova](https://github.com/openstack/nova) | Server lifecycle, flavor selection, cross-service correlation |
+| [sapcc-networking](plugins/sapcc/skills/sapcc-networking/) | [Neutron](https://github.com/openstack/neutron) | Network topology, security groups, connectivity debugging |
+| [sapcc-storage](plugins/sapcc/skills/sapcc-storage/) | [Cinder](https://github.com/openstack/cinder) | Volume lifecycle, attachment states, performance tiers |
+| [sapcc-identity](plugins/sapcc/skills/sapcc-identity/) | [Keystone](https://github.com/openstack/keystone) | Domain/project model, app credentials, service catalog |
+| [sapcc-quota](plugins/sapcc/skills/sapcc-quota/) | [Limes](https://github.com/sapcc/limes) | Quota interpretation, capacity planning, usage tracking |
+| [sapcc-audit](plugins/sapcc/skills/sapcc-audit/) | [Hermes](https://github.com/sapcc/hermes) | CADF events, compliance queries, change investigation |
+| [sapcc-metrics](plugins/sapcc/skills/sapcc-metrics/) | [Maia](https://github.com/sapcc/maia) | PromQL queries, metric discovery, monitoring |
+| [sapcc-registry](plugins/sapcc/skills/sapcc-registry/) | [Keppel](https://github.com/sapcc/keppel) | Container images, vulnerability status, federation |
+| [sapcc-connectivity](plugins/sapcc/skills/sapcc-connectivity/) | [Archer](https://github.com/sapcc/archer) | Private endpoint services, service discovery |
+| [sapcc-dns](plugins/sapcc/skills/sapcc-dns/) | [Designate](https://github.com/openstack/designate) | DNS zones, recordsets, zone transfers |
+| [sapcc-loadbalancer](plugins/sapcc/skills/sapcc-loadbalancer/) | [Octavia](https://github.com/openstack/octavia) | Load balancers, pools, health monitors |
+| [sapcc-images](plugins/sapcc/skills/sapcc-images/) | [Glance](https://github.com/openstack/glance) | Image management, properties, visibility |
+| [sapcc-object-storage](plugins/sapcc/skills/sapcc-object-storage/) | [Swift](https://github.com/openstack/swift) | Object storage, containers, large objects |
+| [sapcc-secrets](plugins/sapcc/skills/sapcc-secrets/) | [Barbican](https://github.com/openstack/barbican) | Secret management, certificates, keys |
+| [sapcc-autoscaling](plugins/sapcc/skills/sapcc-autoscaling/) | [Castellum](https://github.com/sapcc/castellum) | Autoscaling policies, resource operations |
+| [sapcc-shared-storage](plugins/sapcc/skills/sapcc-shared-storage/) | [Manila](https://github.com/openstack/manila) | Shared file systems, exports, share networks |
+| [sapcc-baremetal](plugins/sapcc/skills/sapcc-baremetal/) | [Ironic](https://github.com/openstack/ironic) | Baremetal provisioning, node lifecycle |
+| [sapcc-email](plugins/sapcc/skills/sapcc-email/) | [Cronus](https://github.com/sapcc/cronus) | Email notifications, SMTP relay |
+| [credential-setup](plugins/sapcc/skills/credential-setup/) | [Keystone](https://github.com/openstack/keystone) | Guided auth setup with keychain storage |
 
 ### Rules
 
