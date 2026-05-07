@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "python3 plugins/sapcc/hooks/destructive-action-gate.py",
+        "timeout": 3000,
+        "matcher": "mcp__*"
+      }
+    ]
+  }
+}
