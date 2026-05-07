@@ -19,18 +19,25 @@ from __future__ import annotations
 import json
 import sys
 
-# Patterns that indicate credential/auth failure
-AUTH_FAILURE_PATTERNS = [
-    "401",
-    "unauthorized",
+# Strong patterns: a single match is sufficient to detect auth failure
+STRONG_PATTERNS = [
+    "401 unauthorized",
     "authentication required",
     "token expired",
     "invalid credentials",
     "could not authenticate",
-    "auth_url",
+    "keystoneauth1.exceptions",
+]
+
+# Weak patterns: require 2+ matches to trigger (reduces false positives)
+# e.g., a Hermes event mentioning "401" in its content should not trigger
+WEAK_PATTERNS = [
+    "401",
+    "unauthorized",
     "keystoneauth",
     "re-authenticate",
     "credential",
+    "auth_url",
 ]
 
 
@@ -51,11 +58,13 @@ def main() -> None:
     result_str = str(tool_result).lower()
 
     # Check for auth failure patterns
-    auth_failure = False
-    for pattern in AUTH_FAILURE_PATTERNS:
-        if pattern in result_str:
-            auth_failure = True
-            break
+    # Strong patterns: single match sufficient
+    auth_failure = any(p in result_str for p in STRONG_PATTERNS)
+
+    # Weak patterns: require 2+ matches to reduce false positives
+    if not auth_failure:
+        weak_hits = sum(1 for p in WEAK_PATTERNS if p in result_str)
+        auth_failure = weak_hits >= 2
 
     if not auth_failure:
         # No auth issue — exit silently

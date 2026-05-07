@@ -89,7 +89,7 @@ Manage Octavia load balancers: list/inspect LBs, listeners, and pools. Understan
 
 | Need | Service | Tool |
 |------|---------|------|
-| Subnet details for VIP | Neutron | `neutron_get_subnet(<vip_subnet_id>)` |
+| Subnet details for VIP | Neutron | `neutron_list_subnets(<vip_subnet_id>)` |
 | Who created/modified the LB | Hermes | `hermes_list_events(target_type=loadbalancer)` |
 | LB quota for the project | Limes | `limes_get_project_quota(service=network)` |
 | Server behind a pool member | Nova | `nova_get_server(<member_server_id>)` |

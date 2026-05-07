@@ -33,7 +33,6 @@ DESTRUCTIVE_TOOLS: dict[str, str] = {
     "neutron_delete_security_group": "Removes the security group. Ports referencing it lose those rules.",
     "neutron_delete_security_group_rule": "Removes a security group rule. May block traffic that was previously allowed.",
     "neutron_delete_router": "Deletes the router. Connected subnets lose external connectivity.",
-    "neutron_delete_floatingip": "Releases the floating IP. External access to the instance is lost.",
     # Keystone - identity
     "keystone_delete_application_credential": "Revokes the application credential. Services using it will fail to authenticate.",
     "keystone_delete_project": "Deletes the project and schedules all resources for cleanup.",

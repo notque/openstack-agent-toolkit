@@ -18,7 +18,7 @@ Inspect email service status: check sending usage and list available email templ
 
 > **Note**: Cronus MCP tools are planned but not yet implemented in the MCP server. The skill documents the service for reference. When tools become available, they will follow the `cronus_` prefix pattern.
 
-### Expected Tools (planned)
+### Expected Tools (NOT YET AVAILABLE)
 
 | Tool | Purpose | Expected Parameters |
 |------|---------|---------------------|
@@ -55,7 +55,7 @@ Until Cronus MCP tools are available:
 
 ### List Available Templates for Integration
 
-1. `cronus_list_templates` — see all configured templates.
+1. `cronus_list_senders` — see all configured templates.
 2. Note template names/IDs for use in application code.
 3. Templates define the email structure; applications provide the dynamic content.
 

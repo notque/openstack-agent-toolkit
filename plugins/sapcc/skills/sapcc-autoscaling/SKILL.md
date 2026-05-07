@@ -19,7 +19,7 @@ Inspect Castellum autoscaling state: view resource configurations, check pending
 
 > **Note**: Castellum MCP tools are planned but not yet implemented in the MCP server. The skill documents the service for reference. When tools become available, they will follow the `castellum_` prefix pattern.
 
-### Expected Tools (planned)
+### Expected Tools (NOT YET AVAILABLE)
 
 | Tool | Purpose | Expected Parameters |
 |------|---------|---------------------|

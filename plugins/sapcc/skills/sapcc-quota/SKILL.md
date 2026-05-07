@@ -140,7 +140,7 @@ If any is insufficient, the server creation will fail with a quota error.
 ### Cluster-wide capacity check
 
 ```
-1. limes_get_cluster_quota(service="compute")
+1. limes_get_cluster_capacity(service="compute")
 2. Shows total cluster capacity, domains_quota, usage
 3. capacity - domains_quota = unallocated headroom
 ```

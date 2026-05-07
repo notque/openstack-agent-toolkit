@@ -43,13 +43,13 @@ This guides you through storing credentials in your OS keychain. Supports:
 Environment variables used by the MCP server:
 | Variable | Description |
 |----------|-------------|
-| `OS_AUTH_URL` | Keystone endpoint (e.g., `https://identity-3.<region>.cloud.sap/v3`) |
+| `OS_AUTH_URL` | Keystone endpoint (e.g., `https://identity-3.<region>.cloud.example.com/v3`) |
 | `OS_USERNAME` | SAP CC username (if using password auth) |
 | `OS_PW_CMD` | Command to retrieve password from keychain |
 | `OS_APPLICATION_CREDENTIAL_ID` | App credential ID (if using app creds) |
 | `OS_APPCRED_SECRET_CMD` | Command to retrieve app credential secret |
 | `OS_PROJECT_NAME` | Default project scope |
-| `OS_DOMAIN_NAME` | Domain (e.g., `monsoon3`) |
+| `OS_DOMAIN_NAME` | Domain (e.g., `my-domain`) |
 | `MCP_READ_ONLY` | `true` (default) = read-only tools; `false` = enable write tools |
 | `MCP_ADMIN_TOOLS` | `true` = enable admin tools (requires `cloud_admin` role) |
 
@@ -136,10 +136,10 @@ When you ask the agent a question, it auto-selects the appropriate skill:
 | Images, snapshots, image properties | `sapcc-images` | `glance_*` |
 | Object storage, containers, objects | `sapcc-object-storage` | `swift_*` |
 | Secrets, certificates, keys | `sapcc-secrets` | `barbican_*` |
-| Autoscaling policies | `sapcc-autoscaling` | `castellum_*` |
+| Autoscaling policies | `sapcc-autoscaling` | `castellum_*` (planned) |
 | Shared file systems, shares, exports | `sapcc-shared-storage` | `manila_*` |
 | Baremetal provisioning | `sapcc-baremetal` | `ironic_*` |
-| Email notifications | `sapcc-email` | `cronus_*` |
+| Email notifications | `sapcc-email` | `cronus_*` (planned) |
 | Auth setup, credential config | `credential-setup` | (guided wizard) |
 
 ## What's Included

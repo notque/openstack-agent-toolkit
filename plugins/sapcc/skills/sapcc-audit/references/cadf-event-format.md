@@ -19,8 +19,8 @@ Source: [sapcc/go-api-declarations/cadf/event.go](https://github.com/sapcc/go-ap
   "initiator": {
     "typeURI": "service/security/account/user",
     "id": "user-keystone-uuid",
-    "name": "I810033",
-    "domain": "monsoon3",
+    "name": "D012345",
+    "domain": "cc-demo",
     "host": {
       "address": "10.0.0.1",
       "agent": "python-openstackclient/6.0.0"
