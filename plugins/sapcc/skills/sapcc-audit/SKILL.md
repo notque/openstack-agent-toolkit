@@ -17,7 +17,7 @@ Hermes is SAP CC's centralized audit service. It records all API actions across 
 
 ## MCP Tools
 
-### Read Tools (always available)
+### Read Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|

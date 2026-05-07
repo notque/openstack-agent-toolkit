@@ -17,7 +17,7 @@ Inspect secrets stored in the key manager: list secrets, check metadata, verify 
 
 ## MCP Tools
 
-### Read Tools (always available)
+### Read Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|

@@ -17,7 +17,7 @@ Manage DNS zones and recordsets: list zones, inspect zone details, query records
 
 ## MCP Tools
 
-### Read Tools (always available)
+### Read Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
@@ -27,7 +27,7 @@ Manage DNS zones and recordsets: list zones, inspect zone details, query records
 | `designate_list_zone_transfer_requests` | List outgoing zone transfer requests | `zone_id`, `status` |
 | `designate_list_zone_transfer_accepts` | List accepted zone transfers | (none) |
 
-### Write Tools* (require `MCP_READ_ONLY=false`)
+### Write Tools (requires MCP_READ_ONLY=false)
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|

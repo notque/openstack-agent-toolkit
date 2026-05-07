@@ -17,7 +17,7 @@ Inspect Swift containers and objects: list containers, browse object listings, c
 
 ## MCP Tools
 
-### Read Tools (always available)
+### Read Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
@@ -25,7 +25,7 @@ Inspect Swift containers and objects: list containers, browse object listings, c
 | `swift_list_objects` | List objects in a container | `container` (**required**), `prefix`, `delimiter` (e.g., `/` for pseudo-dirs), `limit` |
 | `swift_get_object_metadata` | Get object metadata (not content) | `container` (**required**), `object` (**required**) |
 
-### Write Tools* (require `MCP_READ_ONLY=false`)
+### Write Tools (requires MCP_READ_ONLY=false)
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|

@@ -17,7 +17,7 @@ Inspect baremetal nodes: list nodes, check provision/power states, understand ma
 
 ## MCP Tools
 
-### Read Tools (always available)
+### Read Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
@@ -27,7 +27,7 @@ Inspect baremetal nodes: list nodes, check provision/power states, understand ma
 | `ironic_list_allocations` | List node allocations | `node_id`, `resource_class` |
 | `ironic_list_portgroups` | List port groups (bonded NICs) | `node_id` |
 
-### Admin Tools† (require `MCP_ADMIN_TOOLS=true`)
+### Admin Tools (requires MCP_ADMIN_TOOLS=true)
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|

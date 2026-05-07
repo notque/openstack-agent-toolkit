@@ -16,7 +16,7 @@ Limes is SAP CC's central quota management service. Not part of vanilla OpenStac
 
 ## MCP Tools
 
-### Read Tools (always available)
+### Read Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|

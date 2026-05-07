@@ -17,7 +17,7 @@ Manage Octavia load balancers: list/inspect LBs, listeners, and pools. Understan
 
 ## MCP Tools
 
-### Read Tools (always available)
+### Read Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
@@ -30,14 +30,14 @@ Manage Octavia load balancers: list/inspect LBs, listeners, and pools. Understan
 | `octavia_list_l7policies` | List L7 routing policies | `listener_id`, `name` |
 | `octavia_list_l7rules` | List rules for L7 policy | `l7policy_id` (**required**) |
 
-### Write Tools* (require `MCP_READ_ONLY=false`)
+### Write Tools (requires MCP_READ_ONLY=false)
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
 | `octavia_create_loadbalancer`* | Create a new load balancer | `name` (**required**), `vip_subnet_id` (**required**), `description`, `confirmed` |
 | `octavia_delete_loadbalancer`* | Delete a load balancer | `loadbalancer_id` (**required**), `cascade` (bool, deletes children), `confirmed` |
 
-### Admin Tools† (require `MCP_ADMIN_TOOLS=true`)
+### Admin Tools (requires MCP_ADMIN_TOOLS=true)
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|

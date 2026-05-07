@@ -168,10 +168,10 @@ When you ask the agent a question, it auto-selects the appropriate skill:
 | [sapcc-images](plugins/sapcc/skills/sapcc-images/) | [Glance](https://github.com/openstack/glance) | Image management, properties, visibility |
 | [sapcc-object-storage](plugins/sapcc/skills/sapcc-object-storage/) | [Swift](https://github.com/openstack/swift) | Object storage, containers, large objects |
 | [sapcc-secrets](plugins/sapcc/skills/sapcc-secrets/) | [Barbican](https://github.com/openstack/barbican) | Secret management, certificates, keys |
-| [sapcc-autoscaling](plugins/sapcc/skills/sapcc-autoscaling/) | [Castellum](https://github.com/sapcc/castellum) | Autoscaling policies, resource operations |
+| [sapcc-autoscaling](plugins/sapcc/skills/sapcc-autoscaling/) | [Castellum](https://github.com/sapcc/castellum) | Autoscaling policies (MCP tools planned) |
 | [sapcc-shared-storage](plugins/sapcc/skills/sapcc-shared-storage/) | [Manila](https://github.com/openstack/manila) | Shared file systems, exports, share networks |
 | [sapcc-baremetal](plugins/sapcc/skills/sapcc-baremetal/) | [Ironic](https://github.com/openstack/ironic) | Baremetal provisioning, node lifecycle |
-| [sapcc-email](plugins/sapcc/skills/sapcc-email/) | [Cronus](https://github.com/sapcc/cronus) | Email notifications, SMTP relay |
+| [sapcc-email](plugins/sapcc/skills/sapcc-email/) | [Cronus](https://github.com/sapcc/cronus) | Email notifications (MCP tools planned) |
 | [credential-setup](plugins/sapcc/skills/credential-setup/) | [Keystone](https://github.com/openstack/keystone) | Guided auth setup with keychain storage |
 
 ### Rules

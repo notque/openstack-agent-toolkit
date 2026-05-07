@@ -17,7 +17,7 @@ Manage shared file systems: list shares, inspect share details, understand proto
 
 ## MCP Tools
 
-### Read Tools (always available)
+### Read Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|

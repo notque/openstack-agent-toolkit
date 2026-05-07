@@ -16,7 +16,7 @@ Inspect and list VM images: find available boot images, check image status, unde
 
 ## MCP Tools
 
-### Read Tools (always available)
+### Read Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
@@ -24,7 +24,7 @@ Inspect and list VM images: find available boot images, check image status, unde
 | `glance_get_image` | Full image detail by UUID | `image_id` (**required**) |
 | `glance_list_image_members` | List projects an image is shared with | `image_id` (**required**) |
 
-### Admin Tools† (require `MCP_ADMIN_TOOLS=true`)
+### Admin Tools (requires MCP_ADMIN_TOOLS=true)
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|

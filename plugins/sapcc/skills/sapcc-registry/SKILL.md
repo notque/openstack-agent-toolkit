@@ -16,7 +16,7 @@ Keppel is SAP CC's multi-tenant container image registry. Not vanilla OpenStack.
 
 ## MCP Tools
 
-### Read Tools (always available)
+### Read Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
